@@ -24,6 +24,12 @@ lineas
 ```
 ```{r}
 
+df <- data.frame(linea = lineas, stringsAsFactors = FALSE)
+df
+```
+
+```{r}
+
 producto<-grep(x=lineas, pattern = 'kg')-1
 grep(x=lineas, pattern = 'kg', value = TRUE)
 
