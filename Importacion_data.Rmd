@@ -41,6 +41,15 @@ View(df_tickets)
 
 ```
 
+Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su contenido en un `data.frame`.
+
+La siguiente tabla muestra un ejemplo del contenido:
+
+```{r}
+head(df_tickets, 10)
+```
+Tabla 1. Primeras líneas extraídas de los tickets de Mercadona.
+Como se muestra en la Tabla 1, los tickets contienen información línea por línea, que luego se puede procesar para extraer los productos, precios o fechas.
 
 ```{r}
 #PREGUNTAS
