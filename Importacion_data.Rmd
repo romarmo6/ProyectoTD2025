@@ -64,6 +64,8 @@ aportan los tickets, nos planteamos una serie de preguntas:
 
 - ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
 
+- ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
+
 - ¿A qué horas del día se realizan más compras?
 
 
