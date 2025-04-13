@@ -10,6 +10,20 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
+## Introducción
+Hoy en día, el análisis de datos se ha convertido en una herramienta muy 
+poderosa para la toma de decisiones. A través de la recolección, procesamiento
+y utilización de datos, las empresas pueden obtener ventajas económicas y 
+estrategias.
+
+En nuestro caso, enfocamos el proyecto en:
+- Crear un dataset con los datos de cada uno de los tickets despues de haberlos
+organizado de manera que sean entendibles y nos ayuden a contestar las 
+preguntas que nos hacemos acerca de ellos
+
+
+Para conseguirlo, partimos de un conjunto de tickets de supermercados en formato 
+PDF, los cuales transformaremos a un formato estructurado(data frame). 
 
 ```{r}
 library(pdftools)
