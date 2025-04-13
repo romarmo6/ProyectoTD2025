@@ -48,7 +48,7 @@ View(df_tickets)
 
 #¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
 
-#¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?3333
+#¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
 ```
 
 
