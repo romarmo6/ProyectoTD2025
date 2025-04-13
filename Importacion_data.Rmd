@@ -1,5 +1,6 @@
 ---
-title: "p2"
+title: "Mini Proyecto Tratamiento de Datos"
+author: "Grupo I"
 output: html_document
 date: "2025-04-12"
 ---
@@ -51,29 +52,38 @@ head(df_tickets, 10)
 Tabla 1. Primeras líneas extraídas de los tickets de Mercadona.
 Como se muestra en la Tabla 1, los tickets contienen información línea por línea, que luego se puede procesar para extraer los productos, precios o fechas.
 
-```{r}
-#PREGUNTAS
-#¿Cuántos productos suele incluir un ticket promedio? ¿Y el importe promedio por ticket?
 
-#¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
-
-#¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
-```
+Tras realizar la importación de los datos y observar la información que nos 
+aportan los tickets, nos planteamos una serie de preguntas:
 
 
-```{r}
-#preguntas
-#Además de las preguntas que te hayas planteado debes respoder a las siguientes:
+- ¿Cuántos productos suele incluir un ticket promedio? ¿Y el importe promedio por ticket?
 
-#¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? ¿Cuántas unidades de cada uno se han vendido ?
+- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
 
-#Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos ?
+- ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
 
-#Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos ?
+- ¿A qué horas del día se realizan más compras?
 
-#Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
-#¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
 
-#Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?*
-```
+También trataremos de responder a las preguntas que nos plantean en el proyecto, 
+que son las siguientes:
+
+
+- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
+¿Cuántas unidades de cada uno se han vendido ?
+
+- Si consideramos la categoría de FRUTAS Y VERDURAS. 
+Cuáles son los 5 productos más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos ?
+
+- Si consideramos la categoría de PESCADO. 
+Cuáles son los 5 productos más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos ?
+
+- Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
+las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+- ¿Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?2
+
+- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
+¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
 
