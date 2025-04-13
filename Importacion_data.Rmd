@@ -41,3 +41,8 @@ View(df_tickets)
 
 ```
 
+
+```{r}
+#preguntas
+```
+
