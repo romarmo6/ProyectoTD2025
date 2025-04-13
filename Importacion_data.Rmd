@@ -3,8 +3,8 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Grupo I"
 date: "2025-04-12"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -82,23 +82,28 @@ aportan los tickets, nos planteamos una serie de preguntas:
 
 - ¿A qué horas del día se realizan más compras?
 
+- Realizar un gráfico de las diferentes localidades en función del dinero ingresado 
+en cada una de ellas, de mayor a menor.
+
+- ¿Cuáles son los productos menos vendidos de los que se venden por unidades? 
+¿Y de los que se venden al peso?
 
 También trataremos de responder a las preguntas que nos plantean en el proyecto, 
 que son las siguientes:
 
-- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
-¿Cuántas unidades de cada uno se han vendido ?
+- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? 
+¿Cuántas unidades de cada uno se han vendido?
 
 - Si consideramos la categoría de FRUTAS Y VERDURAS. 
-Cuáles son los 5 productos más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos ?
+Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
 
 - Si consideramos la categoría de PESCADO. 
-Cuáles son los 5 productos más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos ?
+Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
 
 - Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
-- ¿Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?2
+- ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
 
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
