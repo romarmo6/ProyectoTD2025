@@ -1,0 +1,43 @@
+---
+title: "p2"
+output: html_document
+date: "2025-04-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(pdftools)
+
+# Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data', así mismo, devuelve un vector con las rutas completas de archivos que cumplen las condiciones de filtrado.
+ficheros <- list.files(path = "data", pattern = "Mercadona", full.names = TRUE)
+
+# Definimos una funcion
+leer_ticket <- function(x) {
+  data <- pdf_text(x) # Leemos todo el texto de los pdfs filtrados
+  lineas <- strsplit(data, "\n")[[1]] # Strsplit para separar el texto en lineas
+  lineas <- lineas[nchar(trimws(lineas)) > 0]  # Usamos este comando para hacer que las lineas que no contengan caracteres se eliminen. Trimws quita los espacios en blanco al inicio y final de cada linea, posteriormente hacemos la comprobacion de caracteres restantes con nchar, si el valor es > 0, se seleccionan, si no tienen al menos un caracter; se omiten.
+  
+    df <- data.frame(
+    fichero = basename(x),
+    linea = seq_along(lineas),
+    contenido = lineas,
+    stringsAsFactors = FALSE
+  )
+    # Creamos un df, la primera columna siendo los nombres de los pdfs, la segunda siendo el numero de linea (seq_along) y la tercera siendo el contenido de cada una de las lineas leidas.
+  
+  return(df)
+}
+
+df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
+
+#lapply para aplicarle la funcion x al vector de ficheros
+#do.call(rbind) hacemos un append de los ficheros para tenerlos todos en un mismo df
+
+View(df_tickets)
+
+
+```
+
