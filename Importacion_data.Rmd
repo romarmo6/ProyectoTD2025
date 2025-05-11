@@ -65,6 +65,10 @@ leer_ticket <- function(x) {
   num_ticket <- ifelse(length(partes_factura) >= 3, partes_factura[3], NA)
   ##Buscamos la línea que contiene FACTURA SIMPLIFICADA: y extraemos todo lo que viene después de ese texto
   
+  # Extracción de productos 
+  linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
+  lineas_productos <- lineas[8:(linea_fin[1]-1)]
+  
     df <- data.frame(
     fichero = basename(x),
     fecha = fecha,
