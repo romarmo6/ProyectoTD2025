@@ -27,6 +27,7 @@ PDF, los cuales transformaremos a un formato estructurado(data frame).
 
 ```{r}
 library(pdftools)
+library(dplyr)
 
 # Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data', así mismo, devuelve un vector con las rutas completas de archivos que cumplen las condiciones de filtrado.
 ficheros <- list.files(path = "data", pattern = "Mercadona", full.names = TRUE)
@@ -37,6 +38,14 @@ leer_ticket <- function(x) {
   
   lineas <- strsplit(data, "\n")[[1]] # Strsplit para separar el texto en lineas
   lineas <- lineas[nchar(trimws(lineas)) > 0]  # Usamos este comando para hacer que las lineas que no contengan caracteres se eliminen. Trimws quita los espacios en blanco al inicio y final de cada linea, posteriormente hacemos la comprobacion de caracteres restantes con nchar, si el valor es > 0, se seleccionan, si no tienen al menos un caracter; se omiten.
+  
+  direccion <- trimws(lineas[2])
+  
+  linea3 <- trimws(lineas[3])
+  cp <- substr(linea3, 1, 5)
+  ciudad <- substr(linea3, 7, nchar(linea3))
+  
+  telefono <- substr(trimws(lineas[4]), 11, nchar(lineas[4]))
   
   linea_fecha_hora_op <- lineas[grep("OP:", lineas)[1]]  # Busca la línea con "OP:"
   fecha_hora_op <- strsplit(trimws(linea_fecha_hora_op), "\\s+")[[1]] 
@@ -60,6 +69,10 @@ leer_ticket <- function(x) {
     fichero = basename(x),
     fecha = fecha,
     hora = hora,
+    direccion = direccion, 
+    cp = cp,
+    ciudad = ciudad,
+    telefono = telefono, 
     linea = seq_along(lineas),
     operario = operario,
     factura_comleta = factura_completa,
