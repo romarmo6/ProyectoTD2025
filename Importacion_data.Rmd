@@ -68,6 +68,8 @@ leer_ticket <- function(x) {
   # Extracción de productos 
   linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
   lineas_productos <- lineas[8:(linea_fin[1]-1)]
+  print(lineas_productos)
+
   
     df <- data.frame(
     fichero = basename(x),
