@@ -39,14 +39,21 @@ leer_ticket <- function(x) {
   lineas <- lineas[nchar(trimws(lineas)) > 0]  # Usamos este comando para hacer que las lineas que no contengan caracteres se eliminen. Trimws quita los espacios en blanco al inicio y final de cada linea, posteriormente hacemos la comprobacion de caracteres restantes con nchar, si el valor es > 0, se seleccionan, si no tienen al menos un caracter; se omiten.
   
   linea_fecha_hora_op <- lineas[grep("OP:", lineas)[1]]  # Busca la línea con "OP:"
-  fecha_hora_op <- strsplit(trimws(linea_fecha_hora_op), "\\s+")[[1]]  #Usamos strsplit para dividir esa línea por espacios y extraer los elementos en posiciones fijas
+  fecha_hora_op <- strsplit(trimws(linea_fecha_hora_op), "\\s+")[[1]] 
+  #Usamos strsplit para dividir esa línea por espacios y extraer los elementos en posiciones fijas
   
   fecha <- fecha_hora_op[1]  #  fecha.
   hora <- fecha_hora_op[2]   # Hora
   operario <- fecha_hora_op[4]  # Numero de operario
   
-  linea_factura <- lineas[grep("FACTURA SIMPLIFICADA:", lineas)[1]] 
-  factura_simplificada <- trimws(sub(".*FACTURA SIMPLIFICADA:", "", linea_factura)) 
+  linea_factura <- lineas[grep("FACTURA SIMPLIFICADA:", lineas)[1]]
+  factura_completa <- trimws(sub(".*FACTURA SIMPLIFICADA:", "", linea_factura))
+  partes_factura <- strsplit(factura_completa, "-")[[1]]  # Dividir por "-"
+  
+  # Asignar partes (si existen)
+  num_tienda <- ifelse(length(partes_factura) >= 1, partes_factura[1], NA)
+  num_caja <- ifelse(length(partes_factura) >= 2, partes_factura[2], NA)
+  num_ticket <- ifelse(length(partes_factura) >= 3, partes_factura[3], NA)
   ##Buscamos la línea que contiene FACTURA SIMPLIFICADA: y extraemos todo lo que viene después de ese texto
   
     df <- data.frame(
@@ -55,7 +62,10 @@ leer_ticket <- function(x) {
     hora = hora,
     linea = seq_along(lineas),
     operario = operario,
-    factura_simplificada = factura_simplificada,
+    factura_comleta = factura_completa,
+   num_tienda = num_tienda,
+   num_caja = num_caja,
+   num_ticket = num_ticket,
     contenido = lineas,
     stringsAsFactors = FALSE
   )
