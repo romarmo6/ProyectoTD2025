@@ -54,6 +54,8 @@ df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
 #do.call(rbind) hacemos un append de los ficheros para tenerlos todos en un mismo df
 
 View(df_tickets)
+write.csv(df_tickets, "df_tickets.csv", row.names = FALSE)
+
 ```
 
 Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su contenido en un `data.frame`.
@@ -107,4 +109,37 @@ las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
+
+```{r}
+library(dplyr)
+
+# Vector con nombres unicos de ficheros
+nombres_unicos <- unique(df_tickets$fichero)
+
+# Direcci
+direccion <- df_tickets %>%
+  filter(df_tickets$linea==2) %>%
+  select(contenido) %>%
+  pull() # hacemos pull porque queremos vectores, teniamos antes de esto un df
+
+# CP + Ciudad
+linea3 <- df_tickets %>%
+  filter(df_tickets$linea==3) %>%
+  select(contenido) %>%
+  pull()
+
+cp <- substr(trimws(linea3), 1, 5)
+ciudad <- substr(trimws(linea3), 7, nchar(linea3))
+
+# Telefono
+linea4 <- df_tickets %>%
+  filter(linea == 4) %>%
+  select(contenido) %>%
+  pull()
+  
+
+telefono <- substr(trimws(linea4), 11, nchar(linea4))
+
+
+```
 
