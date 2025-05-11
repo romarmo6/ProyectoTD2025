@@ -69,30 +69,30 @@ leer_ticket <- function(x) {
   linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
   lineas_productos <- lineas[8:(linea_fin[1]-1)]
   print(lineas_productos)
+  
+  df <- data.frame(
+      fichero = basename(x),
+      fecha = fecha,
+      hora = hora,
+      direccion = direccion, 
+      cp = cp,
+      ciudad = ciudad,
+      telefono = telefono, 
+      linea = seq_along(lineas),
+      operario = operario,
+      factura_comleta = factura_completa,
+      num_tienda = num_tienda,
+      num_caja = num_caja,
+      num_ticket = num_ticket,
+      contenido = lineas,
+      stringsAsFactors = FALSE
+      )
 
-  
-    df <- data.frame(
-    fichero = basename(x),
-    fecha = fecha,
-    hora = hora,
-    direccion = direccion, 
-    cp = cp,
-    ciudad = ciudad,
-    telefono = telefono, 
-    linea = seq_along(lineas),
-    operario = operario,
-    factura_comleta = factura_completa,
-   num_tienda = num_tienda,
-   num_caja = num_caja,
-   num_ticket = num_ticket,
-    contenido = lineas,
-    stringsAsFactors = FALSE
-  )
-    # Creamos un df, la primera columna siendo los nombres de los pdfs, la segunda siendo la fecha de compra, la tercera siendo la hora en cuando se realiza la compra, la cuarta el numero de linea (seq_along),despues le sigue el numero de operario y la factura simplificada, y por último el contenido de cada una de las lineas leidas.
- 
-  
+  # Creamos un df, la primera columna siendo los nombres de los pdfs, la segunda siendo la fecha de compra, la tercera siendo la hora en cuando se realiza la compra, la cuarta el numero de linea (seq_along),despues le sigue el numero de operario y la factura simplificada, y por último el contenido de cada una de las lineas leidas.
+
   return(df)
 }
+
 
 df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
 
