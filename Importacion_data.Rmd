@@ -158,5 +158,6 @@ linea4 <- df_tickets %>%
 telefono <- substr(trimws(linea4), 11, nchar(linea4))
 
 
+
 ```
 
