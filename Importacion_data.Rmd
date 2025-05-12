@@ -145,28 +145,25 @@ leer_ticket <- function(x) {
   linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
   lineas_productos <- lineas[8:(linea_fin[1]-1)]
   productos_unitarios <- extraer_productos_unitarios(lineas_productos)
-  productos_frut_verd <- extraer_productos_fruta_verdura(lineas_productos)
-  View(lineas_productos)
-  productos <- rbind(productos_frut_verd, productos_unitarios)
+
   # Añadir metadatos a cada producto
-  if (nrow(productos) > 0) {
-    productos$fichero <- basename(x)
-    productos$fecha <- fecha
-    productos$hora <- hora
-    productos$direccion <- direccion
-    productos$cp <- cp
-    productos$ciudad <- ciudad
-    productos$telefono <- telefono
-    productos$operario <- operario
-    productos$factura_completa <- factura_completa
-    productos$num_tienda <- num_tienda
-    productos$num_caja <- num_caja
-    productos$num_ticket <- num_ticket
+  if (nrow(productos_unitarios) > 0) {
+    productos_unitarios$fichero <- basename(x)
+    productos_unitarios$fecha <- fecha
+    productos_unitarios$hora <- hora
+    productos_unitarios$direccion <- direccion
+    productos_unitarios$cp <- cp
+    productos_unitarios$ciudad <- ciudad
+    productos_unitarios$telefono <- telefono
+    productos_unitarios$operario <- operario
+    productos_unitarios$factura_completa <- factura_completa
+    productos_unitarios$num_tienda <- num_tienda
+    productos_unitarios$num_caja <- num_caja
+    productos_unitarios$num_ticket <- num_ticket
   }
   
-  return(productos)
+  return(productos_unitarios)
 }
-
 
 
 df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
