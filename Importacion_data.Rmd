@@ -248,6 +248,35 @@ print(media_importe_ciudad)
 
 - ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
 
+```{r}
+#Filtrar sólo productos unitarios y convertimos el precio a valor numerico
+
+tabla_precios <- df_tickets %>%
+  filter(tipo == "Unitario") %>%  
+  mutate(
+    precio_num = as.numeric(gsub(",", ".", precio_unitario))
+  ) %>%
+  filter(precio_num > 0) %>%     # ignorar valores cero
+  select(producto, precio_num)
+
+# Usamos unique para que solo aparezca cada elemento una vez 
+
+tabla_precios <- unique(tabla_precios)
+
+# Tablas primero en orden ascendente y luego descente para ver cual es el producto mas caro y mas barato
+tabla_asc <- tabla_precios %>%
+  arrange(precio_num)
+
+tabla_desc <- tabla_precios %>%
+  arrange(desc(precio_num))
+
+#Mostramos tablas
+
+tabla_asc
+tabla_desc
+
+```
+
 - ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
 
 - ¿A qué horas del día se realizan más compras?
