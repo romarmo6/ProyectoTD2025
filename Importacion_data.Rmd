@@ -31,6 +31,42 @@ library(dplyr)
 
 # Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data', así mismo, devuelve un vector con las rutas completas de archivos que cumplen las condiciones de filtrado.
 ficheros <- list.files(path = "data", pattern = "Mercadona", full.names = TRUE)
+library(stringr)
+
+extraer_productos_unitarios <- function(lineas_productos) {
+  productos <- data.frame()
+  
+  for (linea in lineas_productos) {
+    linea <- trimws(linea)
+    
+    # Caso con precio unitario y total (ej: "2 PRODUCTO 1,60 3,20")
+    if (str_detect(linea, "^\\d+\\s+.+\\s+\\d+,\\d{2}\\s+\\d+,\\d{2}$")) {
+      matched <- str_match(linea, "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})\\s+(\\d+,\\d{2})$")
+      fila <- data.frame(
+        cantidad = matched[2],
+        producto = matched[3],
+        precio_unitario = matched[4],
+        importe = matched[5],
+        stringsAsFactors = FALSE
+      )
+      productos <- rbind(productos, fila)
+      
+    # Caso solo con importe final (ej: "1 PRODUCTO 1,55")
+    } else if (str_detect(linea, "^\\d+\\s+.+\\s+\\d+,\\d{2}$")) {
+      matched <- str_match(linea, "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})$")
+      fila <- data.frame(
+        cantidad = matched[2],
+        producto = matched[3],
+        precio_unitario = NA,
+        importe = matched[4],
+        stringsAsFactors = FALSE
+      )
+      productos <- rbind(productos, fila)
+    }
+  }
+  
+  return(productos)
+}
 
 # Definimos una funcion
 leer_ticket <- function(x) {
@@ -69,37 +105,38 @@ leer_ticket <- function(x) {
   # Extracción de productos 
   linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
   lineas_productos <- lineas[8:(linea_fin[1]-1)]
-  print(lineas_productos)
-
+  productos_unitarios <- extraer_productos_unitarios(lineas_productos)
   
-    df <- data.frame(
-    fichero = basename(x),
-    fecha = fecha,
-    hora = hora,
-    direccion = direccion, 
-    cp = cp,
-    ciudad = ciudad,
-    telefono = telefono, 
-    linea = seq_along(lineas),
-    operario = operario,
-    factura_comleta = factura_completa,
-   num_tienda = num_tienda,
-   num_caja = num_caja,
-   num_ticket = num_ticket,
-    contenido = lineas,
-    stringsAsFactors = FALSE
-  )
-    # Creamos un df, la primera columna siendo los nombres de los pdfs, la segunda siendo la fecha de compra, la tercera siendo la hora en cuando se realiza la compra, la cuarta el numero de linea (seq_along),despues le sigue el numero de operario y la factura simplificada, y por último el contenido de cada una de las lineas leidas.
- 
+  #Total de la compra:
+  linea_total <- grep("TOTAL", lineas)
+  total_lista <- strsplit(lineas[linea_total[1]], " {2,}")
+  total_compra <- total_lista[[1]][3]
   
-  return(df)
+  # Añadir metadatos a cada producto
+  if (nrow(productos_unitarios) > 0) {
+    productos_unitarios$fichero <- basename(x)
+    productos_unitarios$fecha <- fecha
+    productos_unitarios$hora <- hora
+    productos_unitarios$direccion <- direccion
+    productos_unitarios$cp <- cp
+    productos_unitarios$ciudad <- ciudad
+    productos_unitarios$telefono <- telefono
+    productos_unitarios$operario <- operario
+    productos_unitarios$factura_completa <- factura_completa
+    productos_unitarios$num_tienda <- num_tienda
+    productos_unitarios$num_caja <- num_caja
+    productos_unitarios$num_ticket <- num_ticket
+    productos_unitarios$total_compra <- total_compra
+  }
+  
+  return(productos_unitarios)
 }
 
-df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
 
+
+df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
 #lapply para aplicarle la funcion x al vector de ficheros
 #do.call(rbind) hacemos un append de los ficheros para tenerlos todos en un mismo df
-
 View(df_tickets)
 write.csv(df_tickets, "df_tickets.csv", row.names = FALSE)
 
@@ -187,37 +224,4 @@ las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
 
-```{r}
-library(dplyr)
-
-# Vector con nombres unicos de ficheros
-nombres_unicos <- unique(df_tickets$fichero)
-
-# Direcci
-direccion <- df_tickets %>%
-  filter(df_tickets$linea==2) %>%
-  select(contenido) %>%
-  pull() # hacemos pull porque queremos vectores, teniamos antes de esto un df
-
-# CP + Ciudad
-linea3 <- df_tickets %>%
-  filter(df_tickets$linea==3) %>%
-  select(contenido) %>%
-  pull()
-
-cp <- substr(trimws(linea3), 1, 5)
-ciudad <- substr(trimws(linea3), 7, nchar(linea3))
-
-# Telefono
-linea4 <- df_tickets %>%
-  filter(linea == 4) %>%
-  select(contenido) %>%
-  pull()
-  
-
-telefono <- substr(trimws(linea4), 11, nchar(linea4))
-
-
-
-```
 
