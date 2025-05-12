@@ -217,6 +217,34 @@ paste("importe medio por ticket", round(media_importe, 2))
 ```
 
 - ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
+- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
+
+```{r}
+
+#  Calcular importe total por ticket
+ res_ticket <- df_tickets %>%
+  group_by(ciudad, fichero) %>%
+  summarise(
+    importe_ticket = sum(as.numeric(gsub(",", ".", importe))),
+    .groups = "drop"
+  )
+
+#  Calcular importe medio por ciudad
+media_importe_ciudad <- res_ticket %>%
+  group_by(ciudad) %>%
+  summarise(
+    media_importe = mean(importe_ticket),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(media_importe))
+
+# Mostrar la tabla de importes medios por ciudad
+print(media_importe_ciudad)
+
+# Como podemos ver resulta que valencia no esta ni en la primera pagina de los 
+#resultados, las poblaciones que más gastan son las de tamaño medio/pequeño
+
+```
 
 - ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
 
