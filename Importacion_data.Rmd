@@ -125,6 +125,7 @@ leer_ticket <- function(x) {
     productos_unitarios$num_tienda <- num_tienda
     productos_unitarios$num_caja <- num_caja
     productos_unitarios$num_ticket <- num_ticket
+    productos_unitarios$total_compra <- total_compra
   }
   
   return(productos_unitarios)
