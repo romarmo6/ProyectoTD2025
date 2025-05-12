@@ -28,13 +28,13 @@ PDF, los cuales transformaremos a un formato estructurado(data frame).
 ```{r}
 library(pdftools)
 library(dplyr)
+library(stringr)
 
 # Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data', así mismo, devuelve un vector con las rutas completas de archivos que cumplen las condiciones de filtrado.
 ficheros <- list.files(path = "data", pattern = "Mercadona", full.names = TRUE)
-library(stringr)
 
 extraer_productos_unitarios <- function(lineas_productos) {
-  productos <- data.frame()
+  productos <- data.frame(stringsAsFactors = FALSE)
   
   for (linea in lineas_productos) {
     linea <- trimws(linea)
@@ -42,11 +42,18 @@ extraer_productos_unitarios <- function(lineas_productos) {
     # Caso con precio unitario y total (ej: "2 PRODUCTO 1,60 3,20")
     if (str_detect(linea, "^\\d+\\s+.+\\s+\\d+,\\d{2}\\s+\\d+,\\d{2}$")) {
       matched <- str_match(linea, "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})\\s+(\\d+,\\d{2})$")
+      cantidad_orig <- matched[2]
+      producto_nom  <- matched[3]
+      pu_orig       <- matched[4]
+      imp           <- matched[5]
+      # si la cantidad es 1, el precio_unitario es el propio importe
+      precio_unit   <- if (cantidad_orig == "1") imp else pu_orig
       fila <- data.frame(
-        cantidad = matched[2],
-        producto = matched[3],
-        precio_unitario = matched[4],
-        importe = matched[5],
+        cantidad        = cantidad_orig,
+        producto        = producto_nom,
+        precio_unitario = precio_unit,
+        importe         = imp,
+        tipo            = "Unitario",
         stringsAsFactors = FALSE
       )
       productos <- rbind(productos, fila)
@@ -55,10 +62,36 @@ extraer_productos_unitarios <- function(lineas_productos) {
     } else if (str_detect(linea, "^\\d+\\s+.+\\s+\\d+,\\d{2}$")) {
       matched <- str_match(linea, "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})$")
       fila <- data.frame(
-        cantidad = matched[2],
-        producto = matched[3],
+        cantidad        = matched[2],
+        producto        = matched[3],
         precio_unitario = matched[4],  # igual al importe cuando cantidad == 1
-        importe = matched[4],
+        importe         = matched[4],
+        tipo            = "Unitario",
+        stringsAsFactors = FALSE
+      )
+      productos <- rbind(productos, fila)
+    }
+  }
+  
+  return(productos)
+}
+
+# Nueva función para extraer productos por peso (ej: "1,200 kg 3,50 €/kg 4,20")
+extraer_productos_peso <- function(lineas_productos) {
+  productos <- data.frame(stringsAsFactors = FALSE)
+  
+  for (i in seq_along(lineas_productos)) {
+    # línea con precio por kg
+    if (str_detect(lineas_productos[i], "[0-9,]+\\s*kg")) {
+      # nombre en la línea anterior, sin prefijo numérico si existe
+      nombre <- str_trim(str_remove(lineas_productos[i-1], "^\\d+\\s+"))
+      matched <- str_match(lineas_productos[i], "([0-9,]+)\\s*kg\\s*([0-9,]+)\\s*€/kg\\s*([0-9,]+)")
+      fila <- data.frame(
+        cantidad        = paste0(matched[2], " kg"),
+        producto        = nombre,
+        precio_unitario = paste0(matched[3], " €/kg"),
+        importe         = matched[4],
+        tipo            = "Peso",
         stringsAsFactors = FALSE
       )
       productos <- rbind(productos, fila)
@@ -69,11 +102,12 @@ extraer_productos_unitarios <- function(lineas_productos) {
 }
 
 # Definimos una funcion
+ticket_lines_offset <- 8  # línea donde empiezan los productos
 leer_ticket <- function(x) {
   data <- pdf_text(x) # Leemos todo el texto de los pdfs filtrados
   
   lineas <- strsplit(data, "\n")[[1]] # Strsplit para separar el texto en lineas
-  lineas <- lineas[nchar(trimws(lineas)) > 0]  # Usamos este comando para hacer que las lineas que no contengan caracteres se eliminen. Trimws quita los espacios en blanco al inicio y final de cada linea, posteriormente hacemos la comprobacion de caracteres restantes con nchar, si el valor es > 0, se seleccionan, si no tienen al menos un caracter; se omiten.
+  lineas <- lineas[nchar(trimws(lineas)) > 0]  # limpiamos líneas vacías
   
   direccion <- trimws(lineas[2])
   
@@ -85,12 +119,12 @@ leer_ticket <- function(x) {
   
   linea_fecha_hora_op <- lineas[grep("OP:", lineas)[1]]  # Busca la línea con "OP:"
   fecha_hora_op <- strsplit(trimws(linea_fecha_hora_op), "\\s+")[[1]] 
-  #Usamos strsplit para dividir esa línea por espacios y extraer los elementos en posiciones fijas
-  #"\\s+" divide la cadena de texto cuando se encuentra varios espacios en blanco 
+  #Usamos strsplit para dividir esa línea por espacios y extraer
+  # los elementos en posiciones fijas
   
-  fecha <- fecha_hora_op[1]  #  fecha.
-  hora <- fecha_hora_op[2]   # Hora
-  operario <- fecha_hora_op[4]  # Numero de operario
+  fecha <- fecha_hora_op[1]  # fecha
+  hora <- fecha_hora_op[2]   # hora
+  operario <- fecha_hora_op[4]  # número de operario
   
   linea_factura <- lineas[grep("FACTURA SIMPLIFICADA:", lineas)[1]]
   factura_completa <- trimws(sub(".*FACTURA SIMPLIFICADA:", "", linea_factura))
@@ -100,46 +134,44 @@ leer_ticket <- function(x) {
   num_tienda <- ifelse(length(partes_factura) >= 1, partes_factura[1], NA)
   num_caja <- ifelse(length(partes_factura) >= 2, partes_factura[2], NA)
   num_ticket <- ifelse(length(partes_factura) >= 3, partes_factura[3], NA)
-  ##Buscamos la línea que contiene FACTURA SIMPLIFICADA: y extraemos todo lo que viene después de ese texto
   
   # Extracción de productos 
   linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
-  lineas_productos <- lineas[8:(linea_fin[1]-1)]
+  lineas_productos <- lineas[ticket_lines_offset:(linea_fin[1]-1)]
   productos_unitarios <- extraer_productos_unitarios(lineas_productos)
+  productos_peso      <- extraer_productos_peso(lineas_productos)
+  productos <- rbind(productos_unitarios, productos_peso)
   
-  #Total de la compra:
+  # Total de la compra:
   linea_total <- grep("TOTAL", lineas)
   total_lista <- strsplit(lineas[linea_total[1]], " {2,}")
   total_compra <- total_lista[[1]][3]
   
   # Añadir metadatos a cada producto
-  if (nrow(productos_unitarios) > 0) {
-    productos_unitarios$fichero <- basename(x)
-    productos_unitarios$fecha <- fecha
-    productos_unitarios$hora <- hora
-    productos_unitarios$direccion <- direccion
-    productos_unitarios$cp <- cp
-    productos_unitarios$ciudad <- ciudad
-    productos_unitarios$telefono <- telefono
-    productos_unitarios$operario <- operario
-    productos_unitarios$factura_completa <- factura_completa
-    productos_unitarios$num_tienda <- num_tienda
-    productos_unitarios$num_caja <- num_caja
-    productos_unitarios$num_ticket <- num_ticket
-    productos_unitarios$total_compra <- total_compra
+  if (nrow(productos) > 0) {
+    productos$fichero <- basename(x)
+    productos$fecha <- fecha
+    productos$hora <- hora
+    productos$direccion <- direccion
+    productos$cp <- cp
+    productos$ciudad <- ciudad
+    productos$telefono <- telefono
+    productos$operario <- operario
+    productos$factura_completa <- factura_completa
+    productos$num_tienda <- num_tienda
+    productos$num_caja <- num_caja
+    productos$num_ticket <- num_ticket
+    productos$total_compra <- total_compra
   }
   
-  return(productos_unitarios)
+  return(productos)
 }
 
-
-
+# Procesar todos los tickets
 df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
-#lapply para aplicarle la funcion x al vector de ficheros
-#do.call(rbind) hacemos un append de los ficheros para tenerlos todos en un mismo df
+# View y export
 View(df_tickets)
 write.csv(df_tickets, "df_tickets.csv", row.names = FALSE)
-
 ```
 
 Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su contenido en un `data.frame`.
