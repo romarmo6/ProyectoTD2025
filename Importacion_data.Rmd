@@ -221,7 +221,7 @@ View(horas_compras)
 
 # Opcional: gráfico de barras
 ggplot(horas_compras, aes(x = hora, y = compras)) +
-  geom_col(fill = "red") +
+  geom_col(fill = "lightblue") +
   labs(title = "Cantidad de compras por hora en un dia",
        x = "Hora",
        y = "Cantidad de compras") +
@@ -234,8 +234,36 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 - Realizar un gráfico de las diferentes localidades en función del dinero ingresado 
 en cada una de ellas, de mayor a menor.
 
-- ¿Cuáles son los productos menos vendidos de los que se venden por unidades? 
-¿Y de los que se venden al peso?
+```{r}
+
+```
+
+
+- ¿Cuál es el top 10 de productos menos vendidos por peso?
+```{r}
+
+top_productos_peso <- df_tickets %>%
+  group_by(producto) %>%
+  filter(tipo == "Peso") %>%
+  summarise(
+    num_kg_vendidas = sum(as.numeric(gsub(",", ".", cantidad)))) %>%
+  arrange(num_kg_vendidas)
+
+head(top_productos_peso)
+top_productos_peso %>%
+  slice_min(num_kg_vendidas, n = 10) %>%
+  ggplot(aes(x = reorder(producto, num_kg_vendidas), y = num_kg_vendidas)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  coord_flip() +
+  labs(
+    title = "10 productos vendidos al peso con menor volumen (kg)",
+    x = "Producto",
+    y = "Kg vendidos"
+  ) +
+  theme_minimal()
+      
+```
+
 
 También trataremos de responder a las preguntas que nos plantean en el proyecto, 
 que son las siguientes:
@@ -256,5 +284,36 @@ las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
+```{r}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
 
+df_tickets %>%
+  mutate(dia_semana = wday(as.Date(fecha, "%d/%m/%Y"), label = TRUE, abbr = FALSE, week_start = 1)) %>%
+  count(dia_semana) %>%
+  ggplot(aes(x = dia_semana, y = n)) +
+  geom_col(fill = "salmon") +
+  labs(title = "Número de tickets por día de la semana",
+       x = "Día de la semana", y = "Número de tickets") +
+  theme_minimal()
+
+
+
+```
+Si tuviesemos que cerrar alguna dia de la semana, dando por hecho que los domingos
+todos los Mercadonas cierran, cerraria los jueves.
+
+```{r}
+
+# Operario tiendas diferentes
+
+operarios_varias_tiendas <- df_tickets %>%
+  distinct(operario, num_tienda) %>%  # eliminamos duplicados operario-tienda
+  group_by(operario) %>%
+  summarise(num_tiendas = n(), tiendas = paste(unique(num_tienda), collapse = ", ")) %>%
+  filter(num_tiendas > 1)
+
+View(operarios_varias_tiendas)
+```
 
