@@ -193,6 +193,29 @@ aportan los tickets, nos planteamos una serie de preguntas:
 
 - ¿Cuántos productos suele incluir un ticket promedio? ¿Y el importe promedio por ticket?
 
+```{r}
+# Agrupamos por ticket y calculamos número de líneas (productos) y total del importe
+
+resumen <- df_tickets %>%
+  group_by(fichero) %>%
+  summarise(
+    productos_ticket = n(),
+    importe_ticket   = sum(as.numeric(gsub(",", ".", importe)), na.rm = TRUE)
+  )
+
+# Calculamos la media 
+
+media_productos <- mean(resumen$productos_ticket)
+media_importe   <- mean(resumen$importe_ticket)
+
+paste("productos medios por ticket",round(media_productos, 2))
+paste("importe medio por ticket", round(media_importe, 2))
+
+# Por tanto vemos que normalmente hay una media de 17 productos por ticket 
+# Y el importe medio suele ser unos 46 euros 
+
+```
+
 - ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
 
 - ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
