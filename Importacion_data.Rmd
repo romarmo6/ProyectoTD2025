@@ -250,17 +250,16 @@ top_productos_peso <- df_tickets %>%
   arrange(num_kg_vendidas)
 
 head(top_productos_peso)
-top_productos_peso %>%
-  slice_min(num_kg_vendidas, n = 10) %>%
-  ggplot(aes(x = reorder(producto, num_kg_vendidas), y = num_kg_vendidas)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+
+ggplot(head(top_productos_peso, 10), aes(x = factor(producto, levels = producto), y = num_kg_vendidas)) +
+  geom_col(fill = "skyblue") +
   coord_flip() +
   labs(
-    title = "10 productos vendidos al peso con menor volumen (kg)",
-    x = "Producto",
-    y = "Kg vendidos"
+    title = "Top 10 productos al peso menos vendidos",
+    x = "Producto", y = "Kg vendidos"
   ) +
   theme_minimal()
+
       
 ```
 
@@ -309,9 +308,9 @@ todos los Mercadonas cierran, cerraria los jueves.
 # Operario tiendas diferentes
 
 operarios_varias_tiendas <- df_tickets %>%
-  distinct(operario, num_tienda) %>%  # eliminamos duplicados operario-tienda
+  distinct(operario, num_tienda) %>%  
   group_by(operario) %>%
-  summarise(num_tiendas = n(), tiendas = paste(unique(num_tienda), collapse = ", ")) %>%
+  summarise(num_tiendas = n(), tiendas = paste(unique(num_tienda), collapse = " - ")) %>%
   filter(num_tiendas > 1)
 
 View(operarios_varias_tiendas)
