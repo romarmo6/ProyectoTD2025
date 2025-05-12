@@ -68,46 +68,6 @@ extraer_productos_unitarios <- function(lineas_productos) {
   return(productos)
 }
 
-extraer_productos_fruta_verdura <- function(lineas_productos) {
-  productos_df <- data.frame()
-  i <- 1
-  
-  while (i <= (length(lineas_productos) - 1)) {
-    linea <- trimws(lineas_productos[i])
-    
-    # Detectamos el patrón "1   PRODUCTO"
-    if (str_detect(linea, "^1\\s{2,}")) {
-      # Producto sin el "1" inicial
-      nombre <- sub("^1\\s+", "", linea)
-      
-      # Línea siguiente con datos: "1,186 kg   1,45 €/kg   1,72"
-      datos <- strsplit(trimws(lineas_productos[i + 1]), "\\s{2,}")[[1]]
-      
-      # Validamos que haya al menos 3 partes
-      if (length(datos) >= 3) {
-        cantidad <- str_extract(datos[1], "[0-9]+,[0-9]+")  # Peso
-        precio_unitario <- str_extract(datos[2], "[0-9]+,[0-9]+")  # €/kg
-        importe <- str_extract(datos[3], "[0-9]+,[0-9]+")  # Precio total
-        
-        fila <- data.frame(
-          cantidad = cantidad,
-          producto = nombre,
-          precio_unitario = precio_unitario,
-          importe = importe,
-          stringsAsFactors = FALSE
-        )
-        
-        productos_df <- rbind(productos_df, fila)
-        i <- i + 2  # Saltamos a la siguiente pareja
-        next
-      }
-    }
-    
-    i <- i + 1
-  }
-  
-  return(productos_df)
-}
 # Definimos una funcion
 leer_ticket <- function(x) {
   data <- pdf_text(x) # Leemos todo el texto de los pdfs filtrados
@@ -145,7 +105,12 @@ leer_ticket <- function(x) {
   linea_fin <- grep("ENTRADA|TOTAL", lineas, ignore.case = TRUE)
   lineas_productos <- lineas[8:(linea_fin[1]-1)]
   productos_unitarios <- extraer_productos_unitarios(lineas_productos)
-
+  
+  #Total de la compra:
+  linea_total <- grep("TOTAL", lineas)
+  total_lista <- strsplit(lineas[linea_total[1]], " {2,}")
+  total_compra <- total_lista[[1]][3]
+  
   # Añadir metadatos a cada producto
   if (nrow(productos_unitarios) > 0) {
     productos_unitarios$fichero <- basename(x)
@@ -164,6 +129,7 @@ leer_ticket <- function(x) {
   
   return(productos_unitarios)
 }
+
 
 
 df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
