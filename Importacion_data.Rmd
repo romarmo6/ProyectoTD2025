@@ -360,8 +360,8 @@ dinero_localidades <- df_tickets%>%
 ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_col(fill = 'skyblue')+ labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos")+ theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
                    #Sirve para rotar las etiquetas y que quepan en el grafico
 
-#Como es normal, la localidad con más ingresos es Valencia, con más de 90000 € ingresados.
-#A esta le sigue Alcoy con unos 70000€ y Muro de Alcoyque baja a unos 30000€
+# La localidad con más ingresos es Valencia, con 113220 € ingresados.
+#A esta le sigue Alcoy con 77768 € y Muro de Alcoy que baja a 30277€
 ```
 
 
@@ -384,6 +384,37 @@ Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de ca
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
 - ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# 1. Procedencia de los tickets (distribución por ciudad)
+procedencia_tickets <- df_tickets %>%
+  
+  distinct(fichero, ciudad) %>%  # Para obtener una entrada única por ticket (evitando duplicados si un ticket tiene múltiples productos).
+
+  count(ciudad, name = "num_tickets") %>% #Agrupamos por ciudad y contamos los tickets
+  
+  arrange(desc(num_tickets)) #Orden descendente
+
+# Gráfico de procedencia     
+ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_tickets)) +
+  geom_col(fill = "orange") +
+  labs(title = "Procedencia de los tickets por ciudad",
+       x = "Ciudad",
+       y = "Número de tickets") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) #Ajustamos el angulo de las etiquetas
+
+# 2. Ciudad con mayor número de tickets (respuesta directa)
+ciudad_mas_tickets <- procedencia_tickets %>%
+  slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
+ciudad_mas_tickets
+
+#La ciudad con más tickets es Valencia, con 129 tickets
+```
+
 
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
