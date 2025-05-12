@@ -57,7 +57,7 @@ extraer_productos_unitarios <- function(lineas_productos) {
       fila <- data.frame(
         cantidad = matched[2],
         producto = matched[3],
-        precio_unitario = NA,
+        precio_unitario = matched[4],  # igual al importe cuando cantidad == 1
         importe = matched[4],
         stringsAsFactors = FALSE
       )
