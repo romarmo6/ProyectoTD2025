@@ -201,6 +201,37 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 - Realizar un gráfico de las diferentes localidades en función del dinero ingresado 
 en cada una de ellas, de mayor a menor.
 
+```{r}
+library(dplyr)
+dinero_localidades <- df_tickets%>%
+  
+  # Convertir total_compra a numérico (reemplazando coma por punto)
+  mutate(total_compra = as.numeric(gsub(",", ".", total_compra))) %>%
+  
+  # Agrupar por localidad (ciudad)
+  group_by(ciudad) %>%
+  
+  # Calcular el total ingresado por localidad
+  summarise(total_ingresado = sum(total_compra, na.rm = TRUE)) %>%
+  
+  # Ordenar de mayor a menor
+  arrange(desc(total_ingresado))%>%
+  
+ mutate(ciudad_ordenada = reorder(ciudad, -total_ingresado))%>% #Reorder: reordena los niveles de un factor. El signo "-", indica que será descendente
+  
+  slice_max(total_ingresado, n=15) %>%  #Solo salen las 15 primeras ciudades
+  
+  filter(!is.na(total_ingresado)) #Filtramos los NA
+
+  # Gráfico de barras
+ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_col(fill = 'skyblue')+ labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos")+ theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+                   #Sirve para rotar las etiquetas y que quepan en el grafico
+
+#Como es normal, la localidad con más ingresos es Valencia, con más de 90000 € ingresados.
+#A esta le sigue Alcoy con unos 70000€ y Muro de Alcoyque baja a unos 30000€
+```
+
+
 - ¿Cuáles son los productos menos vendidos de los que se venden por unidades? 
 ¿Y de los que se venden al peso?
 
