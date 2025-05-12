@@ -217,8 +217,6 @@ paste("importe medio por ticket", round(media_importe, 2))
 ```
 
 - ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
-- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
-
 ```{r}
 
 #  Calcular importe total por ticket
@@ -278,6 +276,28 @@ tabla_desc
 ```
 
 - ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
+```{r}
+# Sumar importe por ticket
+extremos <- df_tickets %>%
+  group_by(fichero) %>%
+  summarise(
+    importe_ticket = sum(as.numeric(gsub(",", ".", importe)), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(importe_ticket)
+
+# Sacamos el minimo y maximo 
+compra_menor <- extremos %>% slice(1)
+compra_mayor <- extremos %>% slice(n())
+
+#mostramos el valor de la compra mas grande y mas pequeña
+cat("La compra de menor importe tiene un valor de ", 
+    round(compra_menor$importe_ticket, 2), "€\n", sep = "")
+cat("La compra de mayor importe tiene un valor de ", 
+    round(compra_mayor$importe_ticket, 2), "€\n", sep = "")
+
+
+```
 
 - ¿A qué horas del día se realizan más compras?
 
