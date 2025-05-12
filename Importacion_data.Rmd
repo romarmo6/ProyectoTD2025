@@ -50,6 +50,7 @@ leer_ticket <- function(x) {
   linea_fecha_hora_op <- lineas[grep("OP:", lineas)[1]]  # Busca la línea con "OP:"
   fecha_hora_op <- strsplit(trimws(linea_fecha_hora_op), "\\s+")[[1]] 
   #Usamos strsplit para dividir esa línea por espacios y extraer los elementos en posiciones fijas
+  #"\\s+" divide la cadena de texto cuando se encuentra varios espacios en blanco 
   
   fecha <- fecha_hora_op[1]  #  fecha.
   hora <- fecha_hora_op[2]   # Hora
@@ -129,6 +130,36 @@ aportan los tickets, nos planteamos una serie de preguntas:
 - ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
 
 - ¿A qué horas del día se realizan más compras?
+
+```{r}
+library(ggplot2) 
+
+horas_compras <- df_tickets %>%
+  # Seleccionar solo columnas relevantes
+  select(fecha, hora) %>%
+  # Extraer solo la hora (sin minutos)
+  mutate(hora_simple = substr(hora, 1, 2)) %>%
+  # Contar compras por hora
+  count(hora_simple) %>%
+  # Ordenar de mayor a menor frecuencia
+  arrange(desc(n)) %>%
+  # Renombrar columnas para claridad
+  rename(hora = hora_simple, compras = n)
+
+# Ver el resultado
+View(horas_compras)
+
+# Opcional: gráfico de barras
+ggplot(horas_compras, aes(x = hora, y = compras)) +
+  geom_col(fill = "red") +
+  labs(title = "Cantidad de compras por hora en un dia",
+       x = "Hora",
+       y = "Cantidad de compras") +
+  theme_minimal()
+
+#Como se puede observar en la grafica, se realiza un mayor numero de compras en las horas de la tarde. A las 20h se vende un total de 1827 productos, siendo el numero mas alto
+```
+
 
 - Realizar un gráfico de las diferentes localidades en función del dinero ingresado 
 en cada una de ellas, de mayor a menor.
