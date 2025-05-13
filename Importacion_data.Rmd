@@ -3,17 +3,18 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Grupo I"
 date: "2025-04-12"
 output:
-  html_document:
+  pdf_document:
     toc: true
     toc_depth: 3
-  pdf_document:
+  html_document:
     toc: true
     toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
+
 # Introducción
 Hoy en día, el análisis de datos se ha convertido en una herramienta muy 
 poderosa para la toma de decisiones. A través de la recolección, procesamiento
@@ -40,12 +41,13 @@ p_load(ggplot2, pdftools, stringr, dplyr, tidyr, lubridate)
 
 
 ```{r}
-library(pdftools)
-library(dplyr)
-library(stringr)
+# Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data',
+# así mismo, devuelve un vector con las rutas completas de archivos que cumplen 
+# las condiciones de filtrado.
 
-# Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data', así mismo, devuelve un vector con las rutas completas de archivos que cumplen las condiciones de filtrado.
 ficheros <- list.files(path = "data", pattern = "Mercadona", full.names = TRUE)
+
+# Función extraer productos unitarios
 
 extraer_productos_unitarios <- function(lineas_productos) {
   productos <- data.frame(stringsAsFactors = FALSE)
@@ -53,14 +55,20 @@ extraer_productos_unitarios <- function(lineas_productos) {
   for (linea in lineas_productos) {
     linea <- trimws(linea)
     
-    # Caso con precio unitario y total (ej: "2 PRODUCTO 1,60 3,20")
+    # Caso con precio unitario y total
     if (str_detect(linea, "^\\d+\\s+.+\\s+\\d+,\\d{2}\\s+\\d+,\\d{2}$")) {
-      matched <- str_match(linea, "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})\\s+(\\d+,\\d{2})$")
+      matched <- str_match(linea,
+                           "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})\\s+(\\d+,\\d{2})$")
+      
+# Formato de deteccion: [unidades] [nombre del producto] [precio unitario] [precio total]
+      
       cantidad_orig <- matched[2]
       producto_nom  <- matched[3]
       pu_orig       <- matched[4]
       imp           <- matched[5]
+      
       # si la cantidad es 1, el precio_unitario es el propio importe
+      
       precio_unit   <- if (cantidad_orig == "1") imp else pu_orig
       fila <- data.frame(
         cantidad        = cantidad_orig,
@@ -72,9 +80,12 @@ extraer_productos_unitarios <- function(lineas_productos) {
       )
       productos <- rbind(productos, fila)
       
-    # Caso solo con importe final (ej: "1 PRODUCTO 1,55")
+    # Caso solo con importe final
     } else if (str_detect(linea, "^\\d+\\s+.+\\s+\\d+,\\d{2}$")) {
       matched <- str_match(linea, "^(\\d+)\\s+(.+?)\\s+(\\d+,\\d{2})$")
+      
+# Formato de deteccion: [unidades] [nombre del producto] [precio total]
+      
       fila <- data.frame(
         cantidad        = matched[2],
         producto        = matched[3],
@@ -90,16 +101,20 @@ extraer_productos_unitarios <- function(lineas_productos) {
   return(productos)
 }
 
-# Nueva función para extraer productos por peso (ej: "1,200 kg 3,50 €/kg 4,20")
+# Función extraer productos peso
+
 extraer_productos_peso <- function(lineas_productos) {
   productos <- data.frame(stringsAsFactors = FALSE)
   
   for (i in seq_along(lineas_productos)) {
     # línea con precio por kg
     if (str_detect(lineas_productos[i], "[0-9,]+\\s*kg")) {
+      
       # nombre en la línea anterior, sin prefijo numérico si existe
+      
       nombre <- str_trim(str_remove(lineas_productos[i-1], "^\\d+\\s+"))
-      matched <- str_match(lineas_productos[i], "([0-9,]+)\\s*kg\\s*([0-9,]+)\\s*€/kg\\s*([0-9,]+)")
+      matched <- str_match(lineas_productos[i],
+                           "([0-9,]+)\\s*kg\\s*([0-9,]+)\\s*€/kg\\s*([0-9,]+)")
       fila <- data.frame(
         cantidad        = matched[2],
         producto        = nombre,
@@ -142,6 +157,7 @@ leer_ticket <- function(x) {
   
   linea_factura <- lineas[grep("FACTURA SIMPLIFICADA:", lineas)[1]]
   factura_completa <- trimws(sub(".*FACTURA SIMPLIFICADA:", "", linea_factura))
+  
   partes_factura <- strsplit(factura_completa, "-")[[1]]  # Dividir por "-"
   
   # Asignar partes (si existen)
@@ -183,22 +199,22 @@ leer_ticket <- function(x) {
 
 # Procesar todos los tickets
 df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
-# View y export
+
 View(df_tickets)
-write.csv(df_tickets, "df_tickets.csv", row.names = FALSE)
 
 ```
 
-Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su contenido en un `data.frame`.
-La siguiente tabla muestra un ejemplo del contenido:
+Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su 
+contenido en un `data.frame`. La siguiente tabla muestra un ejemplo del contenido:
 
 ```{r tablauno, echo = FALSE}
 knitr::kable(head(df_tickets, 15), caption = "**TABLA 1. Datos importados.**")
 ```
 
-En la tabla 1 podemos ver la forma en la que hemos importado la información de los tickets. Cada 
-fila del `data.frame` se corresponde con una línea del ticket especificado en la variable fichero. 
-Tenemos todas las líneas de cada ticket, lo cual nos permitirá disponer de la máxima información posible.
+En la tabla 1 podemos ver la forma en la que hemos importado la información de 
+los tickets. Cada fila del `data.frame` se corresponde con una línea del ticket
+especificado en la variable fichero. Tenemos todas las líneas de cada ticket, 
+lo cual nos permitirá disponer de la máxima información posible.
 
 ## Preguntas
 
@@ -222,32 +238,30 @@ resumen <- df_tickets %>%
 media_productos <- mean(resumen$productos_ticket)
 media_importe   <- mean(resumen$importe_ticket)
 
-paste("productos medios por ticket",round(media_productos, 2))
-paste("importe medio por ticket", round(media_importe, 2))
+paste("Productos medios por ticket",round(media_productos, 2))
+paste("Importe medio por ticket", round(media_importe, 2))
 
 # Por tanto vemos que normalmente hay una media de 17 productos por ticket 
 # Y el importe medio suele ser unos 46 euros 
 
 ```
 
-- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
+- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes 
+más altos que las de pueblos pequeños?
+
 ```{r}
 
 #  Calcular importe total por ticket
  res_ticket <- df_tickets %>%
   group_by(ciudad, fichero) %>%
   summarise(
-    importe_ticket = sum(as.numeric(gsub(",", ".", importe))),
-    .groups = "drop"
-  )
+    importe_ticket = sum(as.numeric(gsub(",", ".", importe))),)
 
 #  Calcular importe medio por ciudad
 media_importe_ciudad <- res_ticket %>%
   group_by(ciudad) %>%
   summarise(
-    media_importe = mean(importe_ticket),
-    .groups = "drop"
-  ) %>%
+    media_importe = mean(importe_ticket),) %>%
   arrange(desc(media_importe))
 
 # Mostrar la tabla de importes medios por ciudad
@@ -258,7 +272,7 @@ print(media_importe_ciudad)
 
 
 ggplot(media_importe_ciudad, aes(x = ciudad, y = media_importe, size = media_importe)) +
-  geom_point(color = "steelblue", alpha = 0.7) +
+  geom_point(color = "steelblue") +
   coord_flip() +
   labs(
     title = "Importe medio por ticket según ciudad",
@@ -278,9 +292,7 @@ ggplot(media_importe_ciudad, aes(x = ciudad, y = media_importe, size = media_imp
 
 tabla_precios <- df_tickets %>%
   filter(tipo == "Unitario") %>%  
-  mutate(
-    precio_num = as.numeric(gsub(",", ".", precio_unitario))
-  ) %>%
+  mutate(precio_num = as.numeric(gsub(",", ".", precio_unitario))) %>%
   filter(precio_num > 0) %>%     # ignorar valores cero
   select(producto, precio_num)
 
@@ -288,7 +300,9 @@ tabla_precios <- df_tickets %>%
 
 tabla_precios <- unique(tabla_precios)
 
-# Tablas primero en orden ascendente y luego descente para ver cual es el producto mas caro y mas barato
+# Tablas primero en orden ascendente y luego descente para ver cual es el 
+# producto mas caro y mas barato.
+
 tabla_asc <- tabla_precios %>%
   arrange(precio_num)
 
@@ -303,14 +317,13 @@ tabla_desc
 ```
 
 - ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
+
 ```{r}
 # Sumar importe por ticket
 extremos <- df_tickets %>%
   group_by(fichero) %>%
   summarise(
-    importe_ticket = sum(as.numeric(gsub(",", ".", importe)), na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
+    importe_ticket = sum(as.numeric(gsub(",", ".", importe)), na.rm = TRUE),) %>%
   arrange(importe_ticket)
 
 # Sacamos el minimo y maximo 
@@ -318,17 +331,16 @@ compra_menor <- extremos %>% slice(1)
 compra_mayor <- extremos %>% slice(n())
 
 #mostramos el valor de la compra mas grande y mas pequeña
-cat("La compra de menor importe tiene un valor de ", 
-    round(compra_menor$importe_ticket, 2), "€\n", sep = "")
-cat("La compra de mayor importe tiene un valor de ", 
-    round(compra_mayor$importe_ticket, 2), "€\n", sep = "")
+paste("La compra de menor importe tiene un valor de ", 
+    round(compra_menor$importe_ticket, 2), "€")
+paste("La compra de mayor importe tiene un valor de ", 
+    round(compra_mayor$importe_ticket, 2), "€")
 
 
 ```
 - ¿A qué horas del día se realizan más compras?
 
 ```{r}
-library(ggplot2) 
 
 horas_compras <- df_tickets %>%
   # Seleccionar solo columnas relevantes
@@ -352,7 +364,9 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
        y = "Cantidad de compras") +
   theme_minimal()
 
-#Como se puede observar en la grafica, se realiza un mayor numero de compras en las horas de la tarde. A las 20h se vende un total de 734 productos, siendo el numero mas alto. Y a las 19h un total de 704.
+#Como se puede observar en la grafica, se realiza un mayor numero de compras en 
+# las horas de la tarde. A las 20h se vende un total de 734 productos, siendo el 
+# numero mas alto. Y a las 19h un total de 704.
 ```
 
 
@@ -360,7 +374,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 en cada una de ellas, de mayor a menor.
 
 ```{r}
-library(dplyr)
+
 dinero_localidades <- df_tickets%>%
   
   # Convertir total_compra a numérico (reemplazando coma por punto)
@@ -375,7 +389,8 @@ dinero_localidades <- df_tickets%>%
   # Ordenar de mayor a menor
   arrange(desc(total_ingresado))%>%
   
- mutate(ciudad_ordenada = reorder(ciudad, -total_ingresado))%>% #Reorder: reordena los niveles de un factor. El signo "-", indica que será descendente
+ mutate(ciudad_ordenada = reorder(ciudad, -total_ingresado))%>% 
+  #Reorder: reordena los niveles de un factor. El signo "-", indica que será descendente
   
   slice_max(total_ingresado, n=15) %>%  #Solo salen las 15 primeras ciudades
   
@@ -384,8 +399,13 @@ dinero_localidades <- df_tickets%>%
 dinero_localidades
 
   # Gráfico de barras
-ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_col(fill = 'skyblue')+ labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos")+ theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-                   #Sirve para rotar las etiquetas y que quepan en el grafico
+ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado)) + 
+  geom_col(fill = 'skyblue') +
+  labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#Sirve para rotar las etiquetas y que quepan en el grafico
 
 # La localidad con más ingresos es Valencia, con 124248 € ingresados.
 #A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€
@@ -394,6 +414,7 @@ ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_c
 
 
 - ¿Cuál es el top 10 de productos menos vendidos por peso?
+
 ```{r}
 
 top_productos_peso <- df_tickets %>%
@@ -425,20 +446,23 @@ que son las siguientes:
 ¿Cuántas unidades de cada uno se han vendido?
 
 ```{r}
-Ventas_unitarias <- df_tickets %>% filter(tipo == "Unitario") %>% 
-  
-  group_by(producto) %>%
-  
-  summarise(Unidades_vendidas = sum(as.numeric(cantidad))) %>%
-  
-  arrange(desc(Unidades_vendidas)) %>% 
-  
-  slice_max(Unidades_vendidas, n=15)
 
-ggplot(Ventas_unitarias, aes(x = reorder(producto, Unidades_vendidas, decreasing = TRUE), y = Unidades_vendidas)) + 
+Ventas_unitarias <- df_tickets %>% 
+  filter(tipo == "Unitario") %>% 
+  group_by(producto) %>%
+  summarise(Unidades_vendidas = sum(as.numeric(cantidad))) %>%
+  arrange(desc(Unidades_vendidas)) %>% 
+  slice_max(Unidades_vendidas, n=5)
+
+ggplot(Ventas_unitarias, 
+       aes(x = reorder(producto, Unidades_vendidas, decreasing = TRUE), y = Unidades_vendidas)) + 
   geom_col(fill = "forestgreen")  +
-  theme(axis.text.x = element_text(angle = 54, hjust = 1)) + 
-  labs(title = "Productos más vendidos. (Solo productos vendidos por unidades)", x = "Producto", y = "Unidades vendidas", caption = "Los 5 productos más vendidos son: Atún claro oliva, con 62 unidades,\nqueso lonchas cabra con 53, bolsa plastico con 51, leche desnat. calcio con 49 y yogur coco con 40")
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  labs(title = "Productos más vendidos. (Solo productos vendidos por unidades)", 
+       x = "Producto", y = "Unidades vendidas", 
+       caption = "Los 5 productos más vendidos son: Atún claro oliva, 
+       con 62 unidades,\nqueso lonchas cabra con 53, bolsa plastico con 51, 
+       leche desnat. calcio con 49 y yogur coco con 40")
 ```
 
 
@@ -448,14 +472,30 @@ Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de ca
 ```{r}
 df_peso <- df_tickets %>% filter(tipo == "Peso") #Df con solo productos por peso
 
-df_peso$producto <- gsub("1 ", "", df_peso$producto, fixed = T) #Arreglo un error por el que los productos aparecían de dos formas, por ejemplo, aparecía: "PLATANO" Y "1 PLATANO" como si fueran productos diferentes
+df_peso$producto <- gsub("1 ", "", df_peso$producto, fixed = T) #Arreglo un error 
+# por el que los productos aparecían de dos formas, por ejemplo, aparecía: "PLATANO" 
+# Y "1 PLATANO" como si fueran productos diferentes
 
 head(unique(df_peso$producto), 12) #Vemos los diferentes productos por peso
 
 #Vector de frutas y verduras al peso
-Frutas_y_verduras <- c("COL LOMBARDA", "PLATANO", "REPOLLO LISO GRANEL", "CALABACIN VERDE", "PATATA", "TOMATE NEGRO", "PIMIENTO VERDE", "CHIRIMOYA", "TOMATE ENSALADA", "SANDIA BAJA SEMILLAS", "BATATA GRANEL", "BROCOLI", "PIÑA", "PEPINO", "TOMATE CANARIO", "PIMIENTO ROJO", "PARAGUAYO", "MELON PIEL SAPO", "NARANJA", "GRANADA", "TOAMTE RAMA", "BANANA", "MANZANA GOLDEN", "MANDARINA", "PIMIENTO FREIR", "KIWI VERDE", "AGUACATE", "MELOCOTON AMARILLO", "TOMATE ROSA", "BERENJENA RAYADA GR", "MANZANA GRANNY", "MANGO", "LIMON", "TOMATE PERA", "HABAS", "TOMATE VALENCIANO", "PERA CONFERENCIA", "MANZ. ROJA DULCE", "MANZ. ROJA ACIDULCE", "COLIFLOR", "BERENJENA", "NECTARINA", "PERA ROCHA", "POLVORON GRANEL")
+Frutas_y_verduras <- c("COL LOMBARDA", "PLATANO", "REPOLLO LISO GRANEL", 
+                       "CALABACIN VERDE", "PATATA", "TOMATE NEGRO", 
+                       "PIMIENTO VERDE", "CHIRIMOYA", "TOMATE ENSALADA", 
+                       "SANDIA BAJA SEMILLAS", "BATATA GRANEL", "BROCOLI", 
+                       "PIÑA", "PEPINO", "TOMATE CANARIO", "PIMIENTO ROJO", 
+                       "PARAGUAYO", "MELON PIEL SAPO", "NARANJA", "GRANADA", 
+                       "TOAMTE RAMA", "BANANA", "MANZANA GOLDEN", "MANDARINA", 
+                       "PIMIENTO FREIR", "KIWI VERDE", "AGUACATE", 
+                       "MELOCOTON AMARILLO", "TOMATE ROSA", "BERENJENA RAYADA GR", 
+                       "MANZANA GRANNY", "MANGO", "LIMON", "TOMATE PERA", "HABAS",
+                       "TOMATE VALENCIANO", "PERA CONFERENCIA", "MANZ. ROJA DULCE",
+                       "MANZ. ROJA ACIDULCE", "COLIFLOR", "BERENJENA", "NECTARINA",
+                       "PERA ROCHA", "POLVORON GRANEL")
 
-frutas_Y_verduras_mas_vendidas <- df_peso %>% mutate(cantidad = gsub(",", ".", cantidad)) %>%  #Cambio la coma por el punto en cantidad para poder pasarlo luego a numeric
+frutas_Y_verduras_mas_vendidas <- df_peso %>% 
+  mutate(cantidad = gsub(",", ".", cantidad)) %>%  
+  #Cambio la coma por el punto en cantidad para poder pasarlo luego a numeric
   filter(producto %in% Frutas_y_verduras) %>% 
   group_by(producto) %>% 
   summarise(Ventas = n(), Kilos = sum(as.numeric(cantidad))) %>% 
@@ -470,8 +510,10 @@ Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de ca
 
 ```{r}
 #Utilizo el df calculado en el ejercicio anterior
-pescado_mas_vendido <- df_peso %>% mutate(cantidad = gsub(",", ".", cantidad)) %>%
-  filter(!producto %in% Frutas_y_verduras) %>% #Filtro por los elementos que NO están en el vector de frutas y verduras del ejercicio anterior
+pescado_mas_vendido <- df_peso %>% 
+  mutate(cantidad = gsub(",", ".", cantidad)) %>%
+  filter(!producto %in% Frutas_y_verduras) %>% 
+  #Filtro por los elementos que NO están en el vector de frutas y verduras del ejercicio anterior
   group_by(producto) %>%
   summarise(Ventas = n(), Kilos = sum(as.numeric(cantidad))) %>%
   arrange(desc(Ventas))
@@ -484,17 +526,12 @@ knitr::kable(head(pescado_mas_vendido, 5), caption = "Pescado más vendido")
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
 ```{r}
-  
-library(stringr)
-library(lubridate)
-library(dplyr)
-library(ggplot2)
-
 precio_kilo <- df_tickets %>%
    # Filtrar solo productos de tipo "Peso" que contengan "banana" o "plátano" en el nombre
   filter(tipo == "Peso" ) %>%
   
-   mutate(precio_kg = as.numeric(str_replace(precio_unitario, ",", ".")),#Convertimos a numerico precio_unitario y reemplazamos comas por puntos
+   mutate(precio_kg = as.numeric(str_replace(precio_unitario, ",", ".")),
+          #Convertimos a numerico precio_unitario y reemplazamos comas por puntos
           
     # Convertir fecha a formato Date
     fecha = dmy(fecha),
@@ -502,7 +539,9 @@ precio_kilo <- df_tickets %>%
     tipo_producto = case_when(
   str_detect(tolower(producto), "banana") ~ "Banana",
   str_detect(tolower(producto), "plátano|platano|plátano canario|plátano macho|platanos") ~ "Plátano",  
-  TRUE ~ "Otro" ,   #Creamos una columna nueva que para clasificar los productos en dos categorías: "Banana" y "Plátano". Estanadarizamos los nombres en dos categorias               
+  TRUE ~ "Otro" ,   
+  #Creamos una columna nueva que para clasificar los productos en dos categorías:
+  # "Banana" y "Plátano". Estanadarizamos los nombres en dos categorias               
   )) %>%      
 
     group_by(fecha, tipo_producto)%>%
@@ -515,27 +554,34 @@ precio_kilo <- df_tickets %>%
 
 precio_kilo
 
-ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + geom_line(size = 1) + geom_point(size = 2) + labs(title = "Variación del precio por kilo en bananas y plátanos", x="Fecha", y="Precio Medio") + theme_minimal() +  scale_color_manual(values = c("Banana" = "salmon", "Plátano" = "green"))
+ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + 
+  geom_line(size = 1) + geom_point(size = 2) + 
+  labs(title = "Variación del precio", x="Fecha", y="Precio Medio") + 
+  theme_minimal() +  
+  scale_color_manual(values = c("Banana" = "salmon", "Plátano" = "green"))
 
 
-#Como podemos ver en el gráfico, el precio del plátano varia mucho de precio en comparación con la banana. Además, el plátano es bastante más caro.
-#Gracias al gráfico se puede observar que el plátano es mucho más caro en verano y a medida que se acerca el invierno baja de precio.
-#Mientras que la banana tiene un precio muy parecido durante todo el año.
+# Como podemos ver en el gráfico, el precio del plátano varia mucho de precio en 
+# comparación con la banana. Además, el plátano es bastante más caro. #Gracias al 
+# gráfico se puede observar que el plátano es mucho más caro en verano y a medida 
+# que se acerca el invierno baja de precio. Mientras que la banana tiene un precio 
+# muy parecido durante todo el año.
 ```
 
 
 - ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
 
 ```{r}
-library(dplyr)
-library(ggplot2)
 
 # 1. Procedencia de los tickets (distribución por ciudad)
 procedencia_tickets <- df_tickets %>%
   
-  distinct(fichero, ciudad) %>%  # Para obtener una entrada única por ticket (evitando duplicados si un ticket tiene múltiples productos).
+  distinct(fichero, ciudad) %>%  
+  # Para obtener una entrada única por ticket (evitando duplicados si un ticket 
+  # tiene múltiples productos).
 
-  count(ciudad, name = "num_tickets") %>% #Agrupamos por ciudad y contamos los tickets
+  count(ciudad, name = "num_tickets") %>% 
+  #Agrupamos por ciudad y contamos los tickets
   
   arrange(desc(num_tickets)) #Orden descendente
 
@@ -548,26 +594,27 @@ ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_ticke
        x = "Ciudad",
        y = "Número de tickets") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) #Ajustamos el angulo de las etiquetas
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+#Ajustamos el angulo de las etiquetas
 
 # 2. Ciudad con mayor número de tickets (respuesta directa)
 ciudad_mas_tickets <- procedencia_tickets %>%
   slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
 ciudad_mas_tickets
 
-#La ciudad con más tickets es Valencia, con 130 tickets. Con bastante diferencia de la segunda que es Alboraya con 50.
+#La ciudad con más tickets es Valencia, con 130 tickets. 
+# Con bastante diferencia de la segunda que es Alboraya con 50.
 ```
 
 
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
 ```{r}
-library(dplyr)
-library(ggplot2)
-library(lubridate)
 
 df_tickets %>%
-  mutate(dia_semana = wday(as.Date(fecha, "%d/%m/%Y"), label = TRUE, abbr = FALSE, week_start = 1)) %>%
+  mutate(dia_semana = wday(as.Date(fecha, "%d/%m/%Y"), 
+                           label = TRUE, abbr = FALSE, week_start = 1)) %>%
   count(dia_semana) %>%
   ggplot(aes(x = dia_semana, y = n)) +
   geom_col(fill = "salmon") +
@@ -581,9 +628,12 @@ df_tickets %>%
 # Operario tiendas diferentes
 
 operarios_varias_tiendas <- df_tickets %>%
-  distinct(operario, num_tienda, ciudad) %>%  
+  distinct(operario, num_tienda, ciudad, direccion) %>%  
   group_by(operario) %>%
-  summarise(num_tiendas = n(), tiendas = unique(num_tienda), ciudad = ciudad) %>%
+  summarise(num_tiendas = n(),
+            tiendas = unique(num_tienda),
+            ciudad = ciudad,
+            direccion = direccion) %>%
   filter(num_tiendas > 1)
 
 print(operarios_varias_tiendas)
