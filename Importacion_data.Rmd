@@ -53,7 +53,7 @@ if (!require("pacman")) install.packages("pacman")
 p_load(ggplot2, pdftools, stringr, dplyr, tidyr, lubridate)
 ```
 
-# Importación y visión general de los datos
+# Importación de los datos
 
 Para comenzar nuestro análisis, se nos proporcionó una carpeta con una gran cantidad
 de tickets electrónicos en formato PDF. La mayoría de ellos pertenecían a supermercados 
@@ -263,6 +263,7 @@ df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
 
 ```
 
+#Visión general de los datos
 
 Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su contenido en un `data.frame`.
 Las siguientes tablas muestran un ejemplo del contenido:
@@ -276,7 +277,7 @@ En estas tablas podemos ver toda la información importada de los tickets,
 que hemos transformado en un data.frame de 18 variables.
 
 
-# Análisis de variables numéricas:
+## Análisis de variables numéricas:
 
 Tenemos 4 variables numéricas en el data.frame, que son:
 `cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
