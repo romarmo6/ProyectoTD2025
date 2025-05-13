@@ -396,10 +396,6 @@ ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_c
 ```
 
 
-- ¿Cuáles son los productos menos vendidos de los que se venden por unidades? 
-¿Y de los que se venden al peso?
->>>>>>> c0a8b66c083be4bed7c00f8a69e8b6e9f0c372db
-
 También trataremos de responder a las preguntas que nos plantean en el proyecto, 
 que son las siguientes:
 
@@ -573,12 +569,7 @@ ggplot(Tickets_dia_semana, aes(x = reorder(dia_semana, Tickets, decreasing = TRU
 ```
 
 
-```
-Si tuviesemos que cerrar alguna dia de la semana, dando por hecho que los domingos
-todos los Mercadonas cierran, cerraria los jueves.
-
 ```{r}
-
 # Operario tiendas diferentes
 
 operarios_varias_tiendas <- df_tickets %>%
