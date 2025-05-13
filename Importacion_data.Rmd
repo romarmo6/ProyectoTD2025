@@ -501,7 +501,7 @@ precio_kilo <- df_tickets %>%
 
 precio_kilo
 
-ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + geom_line(size = 1) + geom_point(size = 2) + labs(title = "Variación del precio por kilo en bananas y plátanos", x="Fecha", y="Precio Medio") + theme_minimal() +  scale_color_manual(values = c("Banana" = "yellow", "Plátano" = "green"))
+ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + geom_line(size = 1) + geom_point(size = 2) + labs(title = "Variación del precio por kilo en bananas y plátanos", x="Fecha", y="Precio Medio") + theme_minimal() +  scale_color_manual(values = c("Banana" = "salmon", "Plátano" = "green"))
 
 
 #Como podemos ver en el gráfico, el precio del plátano varia mucho de precio en comparación con la banana. Además, el plátano es bastante más caro.
