@@ -360,8 +360,12 @@ resumen <- df_tickets %>%
 media_productos <- mean(resumen$productos_ticket)
 media_importe   <- mean(resumen$importe_ticket)
 
-paste("El promedio de productos por ticket es",round(media_productos, 2))
-paste("El importe promedio por ticket es", round(media_importe, 2))
+
+tabla_resumen <- data.frame(Media_productos_por_ticket = round(media_productos, 2), 
+                            Importe_medio_por_ticket = round(media_importe, 2))
+
+# Mostramos con kable
+knitr::kable(tabla_resumen, caption = "Figura 1: Resumen de productos e importes medios por ticket")
 
 # Por tanto vemos que normalmente hay una media de 17 productos por ticket 
 # Y el importe medio suele ser unos 46 euros 
@@ -756,22 +760,19 @@ df_tickets %>%
 
 ```
 
-**-¿Ha realizado un mismo operario ventas desde tiendas diferentes?**
+
+*¿Existen operarios que hayan trabajado en más de una tienda de Mercadona?*
+*Si es así, ¿en qué ciudades y fechas lo han hecho?*
 
 Sí, y en la siguiente tabla podemos ver los datos de esas tiendas:
 
 ```{r}
-# Operario tiendas diferentes
 
 operarios_varias_tiendas <- df_tickets %>%
-  distinct(operario, num_tienda, ciudad, direccion) %>%  
+  distinct(operario, num_tienda, ciudad, direccion, fecha) %>%  # Eliminamos duplicados exactos
   group_by(operario) %>%
-  summarise(num_tiendas = n(),
-            tiendas = unique(num_tienda),
-            ciudad = ciudad,
-            direccion = direccion) %>%
-  filter(num_tiendas > 1)
+  filter(n_distinct(num_tienda) > 1) %>%  # Solo operarios con más de una tienda
+  arrange(operario, fecha)
 
-knitr::kable(operarios_varias_tiendas)
+knitr::kable(head(operarios_varias_tiendas, 10), caption = "Operarios que han trabajado en diferentes tiendas")
 ```
-
