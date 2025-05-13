@@ -6,9 +6,11 @@ output:
   html_document:
     toc: true
     toc_depth: 3
+    number_sections: yes
   pdf_document:
     toc: true
     toc_depth: 3
+    number_sections: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -297,8 +299,8 @@ tabla_desc <- tabla_precios %>%
 
 #Mostramos tablas
 
-tabla_asc
-tabla_desc
+head(tabla_asc, 10)
+head(tabla_desc, 10)
 
 ```
 
