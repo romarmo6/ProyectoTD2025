@@ -3,11 +3,10 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Rodrigo Martín,Andreu Fuentes,Pablo Hernández,Alonso Sánchez"
 date: "2025-04-12"
 output:
+  html_document:
     toc: true
     toc_depth: 3
     number_sections: yes
-    toc_depth: 3
-    number_sections: true
   pdf_document:
     toc: true
     toc_depth: 3
