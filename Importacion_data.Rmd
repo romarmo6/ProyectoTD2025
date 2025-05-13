@@ -39,10 +39,10 @@ puede haber algunos repetidos e incluso de otros supermercados.
 Utilizaremos una serie de librerías que nos permitirán llevar a cabo las diferentes
 fases del proyecto. En concreto: 
 
-ggplot2 para la visualización de los datos 
-lubridate para el manejo de las fechas 
-dplyr, stringr para la manipulación de datos
-pdftools nos ayudará con la importación de los tickets(pdfs)
+- ggplot2 para la visualización de los datos \n
+- lubridate para el manejo de las fechas \n
+- dplyr, stringr para la manipulación de datos
+- pdftools nos ayudará con la importación de los tickets(pdfs)
 
 Instalaremos y cargaremos las librerías necesarias haciendo uso de la librería pacman.
 
@@ -256,7 +256,7 @@ summary(df_analisis)
 
 
 
-## Preguntas
+# Preguntas
 
 Tras realizar la importación de los datos y observar la información que nos 
 aportan los tickets, nos planteamos una serie de preguntas:
@@ -663,7 +663,7 @@ df_tickets %>%
   ggplot(aes(x = dia_semana, y = n)) +
   geom_col(fill = "salmon") +
   labs(title = "Número de tickets por día de la semana",
-       x = "Día de la semana", y = "Número de tickets") +
+       x = "Día de la semana", y = "Número de tickets", caption = "Si tuviera que cerrar un día entre semana, lo haría el jueves") +
   theme_minimal()
 
 ```
