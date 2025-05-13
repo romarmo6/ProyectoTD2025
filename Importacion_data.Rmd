@@ -334,36 +334,6 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 en cada una de ellas, de mayor a menor.
 
 ```{r}
-
-
-```
-
-
-- ¿Cuál es el top 10 de productos menos vendidos por peso?
-```{r}
-
-top_productos_peso <- df_tickets %>%
-  group_by(producto) %>%
-  filter(tipo == "Peso") %>%
-  summarise(
-    num_kg_vendidas = sum(as.numeric(gsub(",", ".", cantidad)))) %>%
-  arrange(num_kg_vendidas)
-
-head(top_productos_peso)
-
-ggplot(head(top_productos_peso, 10), aes(x = factor(producto, levels = producto), y = num_kg_vendidas)) +
-  geom_col(fill = "skyblue") +
-  coord_flip() +
-  labs(
-    title = "Top 10 productos al peso menos vendidos",
-    x = "Producto", y = "Kg vendidos"
-  ) +
-  theme_minimal()
-
-      
-```
-
-```{r}
 library(dplyr)
 dinero_localidades <- df_tickets%>%
   
@@ -393,6 +363,32 @@ ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_c
 
 # La localidad con más ingresos es Valencia, con 124248 € ingresados.
 #A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€
+
+```
+
+
+- ¿Cuál es el top 10 de productos menos vendidos por peso?
+```{r}
+
+top_productos_peso <- df_tickets %>%
+  group_by(producto) %>%
+  filter(tipo == "Peso") %>%
+  summarise(
+    num_kg_vendidas = sum(as.numeric(gsub(",", ".", cantidad)))) %>%
+  arrange(num_kg_vendidas)
+
+head(top_productos_peso)
+
+ggplot(head(top_productos_peso, 10), aes(x = factor(producto, levels = producto), y = num_kg_vendidas)) +
+  geom_col(fill = "skyblue") +
+  coord_flip() +
+  labs(
+    title = "Top 10 productos al peso menos vendidos",
+    x = "Producto", y = "Kg vendidos"
+  ) +
+  theme_minimal()
+
+      
 ```
 
 
