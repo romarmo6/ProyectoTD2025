@@ -18,21 +18,33 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
 # Introducción
+
 Hoy en día, el análisis de datos se ha convertido en una herramienta muy 
 poderosa para la toma de decisiones. A través de la recolección, procesamiento
 y utilización de datos, las empresas pueden obtener ventajas económicas y 
 estrategias.
 
-En nuestro caso, enfocamos el proyecto en:
-- Crear un dataset con los datos de cada uno de los tickets despues de haberlos
-organizado de manera que sean entendibles y nos ayuden a contestar las 
-preguntas que nos hacemos acerca de ellos
+En nuestro caso, enfocamos el proyecto en el análisis de tickets de supermercado, en concreto mercadona. Queremos
+desarrollar un programa que nos permita analizar los tickets y extraer información como: qué productos se compran
+más, cómo varían los precios, horas de compra, etc. Nos plantearemos una serie de preguntas que resolveremos con 
+la información proporcionada por los tickets.
+
+Se dispone de un conjunto de tickets proporcionados por el profesor y otros recogidos por los alumnos, 
+en formato pdf. Estos tickets se almacenan en la carpeta data. No todos los tickets son válidos, 
+puede haber algunos repetidos e incluso de otros supermercados.
 
 
-Para conseguirlo, partimos de un conjunto de tickets de supermercados en formato 
-PDF, los cuales transformaremos a un formato estructurado(data frame). 
+## Carga de librerías
 
-#Carga de librerías
+Utilizaremos una serie de librerías que nos permitirán llevar a cabo las diferentes
+fases del proyecto. En concreto: 
+
+ggplot2 para la visualización de los datos 
+lubridate para el manejo de las fechas 
+dplyr, stringr para la manipulación de datos
+pdftools nos ayudará con la importación de los tickets(pdfs)
+
+Instalaremos y cargaremos las librerías necesarias haciendo uso de la librería pacman.
 
 ```{r}
 # Asegúrate que el paquete "pacman" está instalado
@@ -41,6 +53,9 @@ if (!require("pacman")) install.packages("pacman")
 p_load(ggplot2, pdftools, stringr, dplyr, tidyr, lubridate)
 ```
 
+## Importación y visión general de los datos
+
+Código para la importación de los datos:
 
 ```{r}
 # Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data',
@@ -206,17 +221,33 @@ View(df_tickets)
 
 ```
 
-Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su 
-contenido en un `data.frame`. La siguiente tabla muestra un ejemplo del contenido:
+
+Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su contenido en un `data.frame`.
+Las siguientes tablas muestran un ejemplo del contenido:
 
 ```{r tablauno, echo = FALSE}
-knitr::kable(head(df_tickets, 15), caption = "**TABLA 1. Datos importados.**")
+knitr::kable(head(df_tickets[,1:9], 15), caption = "**TABLA 1. Datos importados. 1ª parte**")
+knitr::kable(head(df_tickets[,9:18], 15), caption = "**TABLA 2. Datos importados. 2ª parte**")
 ```
 
-En la tabla 1 podemos ver la forma en la que hemos importado la información de 
-los tickets. Cada fila del `data.frame` se corresponde con una línea del ticket
-especificado en la variable fichero. Tenemos todas las líneas de cada ticket, 
-lo cual nos permitirá disponer de la máxima información posible.
+En estas tablas podemos ver toda la información importada de los tickets, 
+que hemos transformado en un data.frame de 18 variables.
+
+
+Análisis de variables numéricas:
+
+Tenemos 4 variables numéricas en el data.frame, que son:
+Cantidad: número de unidades que se compran de cada producto si son unitarios
+```{r}
+df_analisis <- df_tickets %>% select(c(cantidad, precio_unitario, importe, total_compra)) %>% 
+  mutate(precio_unitario = as.numeric(gsub(",", ".", precio_unitario))) %>%
+  mutate(importe = as.numeric(gsub(",", ".", importe))) %>%
+  mutate(total_compra = as.numeric(gsub(",", ".", total_compra))) %>%
+  mutate(cantidad = as.numeric(gsub(",", ".", cantidad)))
+
+summary(df_analisis)
+```
+
 
 ## Preguntas
 
