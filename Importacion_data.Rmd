@@ -401,6 +401,45 @@ Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de ca
 - Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
+```{r}
+  
+library(stringr)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+
+precio_kilo <- df_tickets %>%
+   # Filtrar solo productos de tipo "Peso" que contengan "banana" o "plátano" en el nombre
+  filter(tipo == "Peso" ) %>%
+  
+   mutate(precio_kg = as.numeric(str_replace(precio_unitario, ",", ".")),#Convertimos a numerico precio_unitario y reemplazamos comas por puntos
+          
+    # Convertir fecha a formato Date
+    fecha = dmy(fecha),
+  
+    tipo_producto = case_when(
+  str_detect(tolower(producto), "banana") ~ "Banana",
+  str_detect(tolower(producto), "plátano|platano|plátano canario|plátano macho|platanos") ~ "Plátano",  
+  TRUE ~ "Otro" ,   #Creamos una columna nueva que para clasificar los productos en dos categorías: "Banana" y "Plátano". Estanadarizamos los nombres en dos categorias               
+  )) %>%      
+
+    group_by(fecha, tipo_producto)%>%
+  
+    summarise(precio_medio = mean(precio_kg, na.rm=TRUE)) %>%  
+  # Agrupar por fecha y tipo de producto para calcular precio medio
+
+  # Filtrar solo bananas y plátanos
+    filter(tipo_producto %in% c("Banana", "Plátano")) 
+
+print(precio_kilo)
+
+ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + geom_line(size = 1) + geom_point(size = 2) + labs(title = "Variación del precio por kilo en bananas y plátanos", x="Fecha", y="Precio Medio") + theme_minimal() +  scale_color_manual(values = c("Banana" = "yellow", "Plátano" = "green"))
+
+
+#Como podemos ver en el gráfico, el precio del plátano varia mucho de precio en comparación con la banana. Además, el plátano es bastante más caro.
+```
+
+
 - ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
 
 ```{r}
