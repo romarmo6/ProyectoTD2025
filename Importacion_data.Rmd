@@ -398,6 +398,59 @@ Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de ca
 - Si consideramos la categoría de PESCADO. 
 Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
 
+```{r}
+library(dplyr)
+library(stringr)
+library(ggplot2)
+
+# 1. Filtrar productos de pescado 
+top_pescados <- df_tickets %>%
+  filter(
+    tipo == "Peso",  # Solo productos vendidos por peso
+    str_detect(tolower(producto), "pescado|merluza|salmón|atún|bacalao|dorada|sardina|bogavante")  # Palabras clave de pescado
+  ) %>%
+  mutate(
+    cantidad_kg = as.numeric(str_replace(cantidad, ",", "."))  # Convertimos kilos a numérico
+  ) %>%
+  
+  mutate(
+  producto_limpio = case_when(
+    str_detect(tolower(producto), "dorada") ~ "DORADA",  # Agrupa cualquier producto que contenga "dorada"
+    str_detect(tolower(producto), "bacalao") ~ "BACALAO",  # Agrupa cualquier producto que contenga "bacalao"
+    str_detect(tolower(producto), "sardina") ~ "SARDINA",
+    str_detect(tolower(producto), "dorada") ~ "DORADA",
+    str_detect(tolower(producto), "atun") ~ "ATUN",
+    str_detect(tolower(producto), "bogavante") ~ "BOGAVANTE",
+    str_detect(tolower(producto), "merluza") ~ "MERLUZA",
+    TRUE ~ producto  # El resto de productos se quedan igual
+  )
+) %>%
+  
+  group_by(producto_limpio) %>%  # Agrupamos por nombre de producto limpio
+  summarise(
+    kilos_vendidos = sum(cantidad_kg, na.rm = TRUE),  # Sumamos kilos por producto
+    veces_vendido = n()  # Contar número de ventas
+  ) %>%
+  arrange(desc(kilos_vendidos)) %>%  # de mayor a menor
+
+# Mostrar resultado
+print(top_pescados)
+
+library(ggplot2)
+ggplot(top_pescados, aes(x = reorder(producto_limpio, -kilos_vendidos), y = kilos_vendidos)) +
+  geom_col(fill = "darkcyan") +
+  labs(
+    title = "Top 4 productos de pescado más vendidos (en kilos)",
+    x = "Producto",
+    y = "Kilos vendidos"
+  ) +
+  theme_minimal()
+
+#Los 4 productos de pescado más vendidos son la dorada con casi 3 kilos, el bacalao, la merluza y  la sardina 
+```
+
+
+
 - Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
