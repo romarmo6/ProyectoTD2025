@@ -261,6 +261,47 @@ aportan los tickets, nos planteamos una serie de preguntas:
 
 - ¿Cuántos productos suele incluir un ticket en promedio? ¿Y el importe promedio por ticket?
 
+- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes 
+más altos que las de pueblos pequeños?
+
+- ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
+
+- ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
+
+- ¿A qué horas del día se realizan más compras?
+
+- Realizar un gráfico de las diferentes localidades en función del dinero ingresado 
+en cada una de ellas, de mayor a menor.
+
+- ¿Cuál es el top 10 de productos menos vendidos por peso?
+
+
+También trataremos de responder a las preguntas que nos plantean en el proyecto, 
+que son las siguientes:
+
+- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? 
+¿Cuántas unidades de cada uno se han vendido?
+
+- Si consideramos la categoría de FRUTAS Y VERDURAS. 
+Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+- Si consideramos la categoría de PESCADO. 
+Cuáles son los 5 productos más vendidos? 
+¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+- Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
+las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
+¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
+
+- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? 
+¿Cuántas unidades de cada uno se han vendido?
+
+**RESPUESTAS**
+
+- ¿Cuántos productos suele incluir un ticket en promedio? ¿Y el importe promedio por ticket?
+
 ```{r}
 # Agrupamos por ticket y calculamos número de líneas (productos) y total del importe
 
@@ -303,7 +344,7 @@ media_importe_ciudad <- res_ticket %>%
   arrange(desc(media_importe))
 
 # Mostrar la tabla de importes medios por ciudad
-print(media_importe_ciudad)
+knitr::kable(media_importe_ciudad)
 
 # Como podemos ver resulta que valencia no esta ni en la primera pagina de los 
 #resultados, las poblaciones que más gastan son las de tamaño medio/pequeño
@@ -349,7 +390,7 @@ tabla_desc <- tabla_precios %>%
 
 #Mostramos tablas
 
-head(tabla_asc, 10)
+knitr::kable(head(tabla_asc, 10))
 head(tabla_desc, 10)
 
 ```
@@ -393,7 +434,7 @@ horas_compras <- df_tickets %>%
   # Renombrar columnas para claridad
   rename(hora = hora_simple, compras = n)
 
-  horas_compras
+  #horas_compras
 
 # Opcional: gráfico de barras
 ggplot(horas_compras, aes(x = hora, y = compras)) +
@@ -435,7 +476,7 @@ dinero_localidades <- df_tickets%>%
   
   filter(!is.na(total_ingresado)) #Filtramos los NA
 
-dinero_localidades
+#dinero_localidades
 
   # Gráfico de barras
 ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado)) + 
@@ -450,9 +491,10 @@ ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado)) +
 #A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€
 
 ```
+ La localidad con más ingresos es Valencia, con 124248 € ingresados.
+A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€.
 
-
-- ¿Cuál es el top 10 de productos menos vendidos por peso?
+**- ¿Cuál es el top 10 de productos menos vendidos por peso?**
 
 ```{r}
 
