@@ -3,11 +3,11 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Grupo I"
 date: "2025-04-12"
 output:
-  pdf_document:
+  html_document:
     toc: true
     toc_depth: 3
     number_sections: yes
-  html_document:
+  pdf_document:
     toc: true
     toc_depth: 3
     number_sections: yes
