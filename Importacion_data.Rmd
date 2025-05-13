@@ -242,6 +242,19 @@ print(media_importe_ciudad)
 # Como podemos ver resulta que valencia no esta ni en la primera pagina de los 
 #resultados, las poblaciones que más gastan son las de tamaño medio/pequeño
 
+
+ggplot(media_importe_ciudad, aes(x = ciudad, y = media_importe, size = media_importe)) +
+  geom_point(color = "steelblue", alpha = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Importe medio por ticket según ciudad",
+    x = "Ciudad",
+    y = "Importe medio (€)",
+    size = "Importe medio"
+  ) +
+  theme_minimal()
+
+
 ```
 
 - ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
@@ -298,7 +311,6 @@ cat("La compra de mayor importe tiene un valor de ",
 
 
 ```
-
 - ¿A qué horas del día se realizan más compras?
 
 ```{r}
@@ -552,28 +564,14 @@ df_tickets %>%
 ```
 
 ```{r}
-Tickets_dia_semana <- df_tickets %>% mutate(dia_semana = weekdays(as.Date(fecha, format = "%d/%m/%Y"))) %>% #Transformo a Date la columna fecha y con weekdays obtengo el día de la semana que se corresponde con cada fecha, y con eso creo la variable dia_semana
-  
-  group_by(dia_semana) %>% 
-  
-  summarise(Tickets = n_distinct(fichero)) #Cuento los distintos ficheros que hay para cada día de la semana
-
-ggplot(Tickets_dia_semana, aes(x = reorder(dia_semana, Tickets, decreasing = TRUE), y = Tickets)) + 
-  geom_col(fill = "slateblue") + 
-  labs(title = "Número de tickets recogidos cada día de la semana", x = "Día de la semana", caption = "Si tuviera que cerrar un día entre semana, lo haría el jueves.")
-
-```
-
-
-```{r}
 # Operario tiendas diferentes
 
 operarios_varias_tiendas <- df_tickets %>%
-  distinct(operario, num_tienda) %>%  
+  distinct(operario, num_tienda, ciudad) %>%  
   group_by(operario) %>%
-  summarise(num_tiendas = n(), tiendas = paste(unique(num_tienda), collapse = " - ")) %>%
+  summarise(num_tiendas = n(), tiendas = unique(num_tienda), ciudad = ciudad) %>%
   filter(num_tiendas > 1)
 
-View(operarios_varias_tiendas)
+print(operarios_varias_tiendas)
 ```
 
