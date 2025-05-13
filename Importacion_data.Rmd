@@ -3,11 +3,11 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Rodrigo Martín,Andreu Fuentes,Pablo Hernández,Alonso Sánchez"
 date: "2025-04-12"
 output:
-  pdf_document:
+  html_document:
     toc: true
     toc_depth: 3
     number_sections: true
-  html_document:
+  pdf_document:
     toc: true
     toc_depth: 3
     number_sections: true
@@ -39,9 +39,9 @@ puede haber algunos repetidos e incluso de otros supermercados.
 Utilizaremos una serie de librerías que nos permitirán llevar a cabo las diferentes
 fases del proyecto. En concreto: 
 
-- ggplot2 para la visualización de los datos \n
-- lubridate para el manejo de las fechas \n
-- dplyr, stringr para la manipulación de datos
+- ggplot2 para la visualización de los datos
+- lubridate para el manejo de las fechas 
+- dplyr y  stringr para la manipulación de datos
 - pdftools nos ayudará con la importación de los tickets(pdfs)
 
 Instalaremos y cargaremos las librerías necesarias haciendo uso de la librería pacman.
@@ -217,7 +217,6 @@ leer_ticket <- function(x) {
 # Procesar todos los tickets
 df_tickets <- do.call(rbind, lapply(ficheros, leer_ticket))
 
-View(df_tickets)
 
 ```
 
@@ -237,10 +236,10 @@ que hemos transformado en un data.frame de 18 variables.
 # Análisis de variables numéricas:
 
 Tenemos 4 variables numéricas en el data.frame, que son:
-`cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
-`precio_unitario`: precio por unidad o por kilo de los productos
-`importe`: importe total que se paga por cada producto
-`total_compra`: importe de la compra realizada
+- `cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
+- `precio_unitario`: precio por unidad o por kilo de los productos
+- `importe`: importe total que se paga por cada producto
+- `total_compra`: importe de la compra realizada
 
 Haciendo uso de `summary` podemos hacer un análisis de sus principales estadísticos:
 
