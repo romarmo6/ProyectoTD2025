@@ -3,11 +3,11 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Grupo I"
 date: "2025-04-12"
 output:
-  pdf_document:
+  html_document:
     toc: true
     toc_depth: 3
     number_sections: yes
-  html_document:
+  pdf_document:
     toc: true
     toc_depth: 3
     number_sections: yes
@@ -226,8 +226,8 @@ Hemos leído los tickets de supermercado usando `pdf_text()` y transformado su c
 Las siguientes tablas muestran un ejemplo del contenido:
 
 ```{r tablauno, echo = FALSE}
-knitr::kable(head(df_tickets[,1:9], 15), caption = "**TABLA 1. Datos importados. 1ª parte**")
-knitr::kable(head(df_tickets[,9:18], 15), caption = "**TABLA 2. Datos importados. 2ª parte**")
+knitr::kable(head(df_tickets[,1:9], 10), caption = "**TABLA 1. Datos importados. 1ª parte**")
+knitr::kable(head(df_tickets[,10:18], 10), caption = "**TABLA 2. Datos importados. 2ª parte**")
 ```
 
 En estas tablas podemos ver toda la información importada de los tickets, 
