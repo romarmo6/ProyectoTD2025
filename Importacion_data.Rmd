@@ -335,7 +335,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 en cada una de ellas, de mayor a menor.
 
 ```{r}
-<<<<<<< HEAD
+
 
 ```
 
