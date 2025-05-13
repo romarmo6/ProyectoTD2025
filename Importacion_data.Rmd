@@ -316,8 +316,7 @@ horas_compras <- df_tickets %>%
   # Renombrar columnas para claridad
   rename(hora = hora_simple, compras = n)
 
-# Ver el resultado
-View(horas_compras)
+  horas_compras
 
 # Opcional: gráfico de barras
 ggplot(horas_compras, aes(x = hora, y = compras)) +
@@ -327,7 +326,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
        y = "Cantidad de compras") +
   theme_minimal()
 
-#Como se puede observar en la grafica, se realiza un mayor numero de compras en las horas de la tarde. A las 20h se vende un total de 1827 productos, siendo el numero mas alto
+#Como se puede observar en la grafica, se realiza un mayor numero de compras en las horas de la tarde. A las 20h se vende un total de 734 productos, siendo el numero mas alto. Y a las 19h un total de 704.
 ```
 
 
@@ -386,12 +385,14 @@ dinero_localidades <- df_tickets%>%
   
   filter(!is.na(total_ingresado)) #Filtramos los NA
 
+dinero_localidades
+
   # Gráfico de barras
 ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_col(fill = 'skyblue')+ labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos")+ theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
                    #Sirve para rotar las etiquetas y que quepan en el grafico
 
-# La localidad con más ingresos es Valencia, con 113220 € ingresados.
-#A esta le sigue Alcoy con 77768 € y Muro de Alcoy que baja a 30277€
+# La localidad con más ingresos es Valencia, con 124248 € ingresados.
+#A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€
 ```
 
 
@@ -405,14 +406,105 @@ que son las siguientes:
 - ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? 
 ¿Cuántas unidades de cada uno se han vendido?
 
+```{r}
+Ventas_unitarias <- df_tickets %>% filter(tipo == "Unitario") %>% 
+  
+  group_by(producto) %>%
+  
+  summarise(Unidades_vendidas = sum(as.numeric(cantidad))) %>%
+  
+  arrange(desc(Unidades_vendidas)) %>% 
+  
+  slice_max(Unidades_vendidas, n=15)
+
+ggplot(Ventas_unitarias, aes(x = reorder(producto, Unidades_vendidas, decreasing = TRUE), y = Unidades_vendidas)) + 
+  geom_col(fill = "forestgreen")  +
+  theme(axis.text.x = element_text(angle = 54, hjust = 1)) + 
+  labs(title = "Productos más vendidos. (Solo productos vendidos por unidades)", x = "Producto", y = "Unidades vendidas", caption = "Los 5 productos más vendidos son: Atún claro oliva, con 62 unidades,\nqueso lonchas cabra con 53, bolsa plastico con 51, leche desnat. calcio con 49 y yogur coco con 40")
+```
+
+
 - Si consideramos la categoría de FRUTAS Y VERDURAS. 
 Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+```{r}
+df_peso <- df_tickets %>% filter(tipo == "Peso") #Df con solo productos por peso
+
+df_peso$producto <- gsub("1 ", "", df_peso$producto, fixed = T) #Arreglo un error por el que los productos aparecían de dos formas, por ejemplo, aparecía: "PLATANO" Y "1 PLATANO" como si fueran productos diferentes
+
+head(unique(df_peso$producto), 12) #Vemos los diferentes productos por peso
+
+#Vector de frutas y verduras al peso
+Frutas_y_verduras <- c("COL LOMBARDA", "PLATANO", "REPOLLO LISO GRANEL", "CALABACIN VERDE", "PATATA", "TOMATE NEGRO", "PIMIENTO VERDE", "CHIRIMOYA", "TOMATE ENSALADA", "SANDIA BAJA SEMILLAS", "BATATA GRANEL", "BROCOLI", "PIÑA", "PEPINO", "TOMATE CANARIO", "PIMIENTO ROJO", "PARAGUAYO", "MELON PIEL SAPO", "NARANJA", "GRANADA", "TOAMTE RAMA", "BANANA", "MANZANA GOLDEN", "MANDARINA", "PIMIENTO FREIR", "KIWI VERDE", "AGUACATE", "MELOCOTON AMARILLO", "TOMATE ROSA", "BERENJENA RAYADA GR", "MANZANA GRANNY", "MANGO", "LIMON", "TOMATE PERA", "HABAS", "TOMATE VALENCIANO", "PERA CONFERENCIA", "MANZ. ROJA DULCE", "MANZ. ROJA ACIDULCE", "COLIFLOR", "BERENJENA", "NECTARINA", "PERA ROCHA", "POLVORON GRANEL")
+
+frutas_Y_verduras_mas_vendidas <- df_peso %>% mutate(cantidad = gsub(",", ".", cantidad)) %>%  #Cambio la coma por el punto en cantidad para poder pasarlo luego a numeric
+  filter(producto %in% Frutas_y_verduras) %>% 
+  group_by(producto) %>% 
+  summarise(Ventas = n(), Kilos = sum(as.numeric(cantidad))) %>% 
+  arrange(desc(Ventas))
+
+knitr::kable(head(frutas_Y_verduras_mas_vendidas, 5), caption = "Frutas y verduras más vendidas")
+```
+
 
 - Si consideramos la categoría de PESCADO. 
 Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
 
+```{r}
+#Utilizo el df calculado en el ejercicio anterior
+pescado_mas_vendido <- df_peso %>% mutate(cantidad = gsub(",", ".", cantidad)) %>%
+  filter(!producto %in% Frutas_y_verduras) %>% #Filtro por los elementos que NO están en el vector de frutas y verduras del ejercicio anterior
+  group_by(producto) %>%
+  summarise(Ventas = n(), Kilos = sum(as.numeric(cantidad))) %>%
+  arrange(desc(Ventas))
+  
+knitr::kable(head(pescado_mas_vendido, 5), caption = "Pescado más vendido")
+```
+
+
 - Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+```{r}
+  
+library(stringr)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+
+precio_kilo <- df_tickets %>%
+   # Filtrar solo productos de tipo "Peso" que contengan "banana" o "plátano" en el nombre
+  filter(tipo == "Peso" ) %>%
+  
+   mutate(precio_kg = as.numeric(str_replace(precio_unitario, ",", ".")),#Convertimos a numerico precio_unitario y reemplazamos comas por puntos
+          
+    # Convertir fecha a formato Date
+    fecha = dmy(fecha),
+  
+    tipo_producto = case_when(
+  str_detect(tolower(producto), "banana") ~ "Banana",
+  str_detect(tolower(producto), "plátano|platano|plátano canario|plátano macho|platanos") ~ "Plátano",  
+  TRUE ~ "Otro" ,   #Creamos una columna nueva que para clasificar los productos en dos categorías: "Banana" y "Plátano". Estanadarizamos los nombres en dos categorias               
+  )) %>%      
+
+    group_by(fecha, tipo_producto)%>%
+  
+    summarise(precio_medio = mean(precio_kg, na.rm=TRUE)) %>%  
+  # Agrupar por fecha y tipo de producto para calcular precio medio
+
+  # Filtrar solo bananas y plátanos
+    filter(tipo_producto %in% c("Banana", "Plátano")) 
+
+precio_kilo
+
+ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + geom_line(size = 1) + geom_point(size = 2) + labs(title = "Variación del precio por kilo en bananas y plátanos", x="Fecha", y="Precio Medio") + theme_minimal() +  scale_color_manual(values = c("Banana" = "yellow", "Plátano" = "green"))
+
+
+#Como podemos ver en el gráfico, el precio del plátano varia mucho de precio en comparación con la banana. Además, el plátano es bastante más caro.
+#Gracias al gráfico se puede observar que el plátano es mucho más caro en verano y a medida que se acerca el invierno baja de precio.
+#Mientras que la banana tiene un precio muy parecido durante todo el año.
+```
+
 
 - ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
 
@@ -429,6 +521,8 @@ procedencia_tickets <- df_tickets %>%
   
   arrange(desc(num_tickets)) #Orden descendente
 
+procedencia_tickets
+
 # Gráfico de procedencia     
 ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_tickets)) +
   geom_col(fill = "orange") +
@@ -443,7 +537,7 @@ ciudad_mas_tickets <- procedencia_tickets %>%
   slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
 ciudad_mas_tickets
 
-#La ciudad con más tickets es Valencia, con 129 tickets
+#La ciudad con más tickets es Valencia, con 130 tickets. Con bastante diferencia de la segunda que es Alboraya con 50.
 ```
 
 
@@ -463,6 +557,18 @@ df_tickets %>%
        x = "Día de la semana", y = "Número de tickets") +
   theme_minimal()
 
+```{r}
+Tickets_dia_semana <- df_tickets %>% mutate(dia_semana = weekdays(as.Date(fecha, format = "%d/%m/%Y"))) %>% #Transformo a Date la columna fecha y con weekdays obtengo el día de la semana que se corresponde con cada fecha, y con eso creo la variable dia_semana
+  
+  group_by(dia_semana) %>% 
+  
+  summarise(Tickets = n_distinct(fichero)) #Cuento los distintos ficheros que hay para cada día de la semana
+
+ggplot(Tickets_dia_semana, aes(x = reorder(dia_semana, Tickets, decreasing = TRUE), y = Tickets)) + 
+  geom_col(fill = "slateblue") + 
+  labs(title = "Número de tickets recogidos cada día de la semana", x = "Día de la semana", caption = "Si tuviera que cerrar un día entre semana, lo haría el jueves.")
+
+```
 
 
 ```
