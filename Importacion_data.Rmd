@@ -433,7 +433,7 @@ tabla_desc <- tabla_precios %>%
 #Mostramos tablas
 
 knitr::kable(head(tabla_asc, 10))
-head(tabla_desc, 10)
+knitr::kable(head(tabla_desc, 10))
 
 ```
 
@@ -492,7 +492,10 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 ```
 
 
+
 **- Realizar un gráfico de las diferentes localidades en función del dinero ingresado en cada una de ellas, de mayor a menor.**
+
+
 
 ```{r}
 
@@ -674,7 +677,7 @@ precio_kilo <- df_tickets %>%
   # Filtrar solo bananas y plátanos
     filter(tipo_producto %in% c("Banana", "Plátano")) 
 
-precio_kilo
+#precio_kilo
 
 ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + 
   geom_line(size = 1) + geom_point(size = 2) + 
@@ -721,17 +724,20 @@ ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_ticke
 #Ajustamos el angulo de las etiquetas
 
 # 2. Ciudad con mayor número de tickets (respuesta directa)
-ciudad_mas_tickets <- procedencia_tickets %>%
-  slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
-ciudad_mas_tickets
+#ciudad_mas_tickets <- procedencia_tickets %>%
+  #slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
+#ciudad_mas_tickets
 
 #La ciudad con más tickets es Valencia, con 130 tickets. 
 # Con bastante diferencia de la segunda que es Alboraya con 50.
 ```
 
+La ciudad con más tickets es Valencia, con 130 tickets. Con bastante diferencia de la segunda que es Alboraya con 50.
 
 **- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. **
-**Si tuvieses que cerrar un día entre semana qué día lo harías ?**
+**- Si tuvieses que cerrar un día entre semana qué día lo harías ?**
+
+
 ```{r}
 
 df_tickets %>%
@@ -745,6 +751,8 @@ df_tickets %>%
   theme_minimal()
 
 ```
+
+**-¿Ha realizado un mismo operario ventas desde tiendas diferentes?**
 
 ```{r}
 # Operario tiendas diferentes
