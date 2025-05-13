@@ -396,6 +396,28 @@ ggplot(Ventas_unitarias, aes(x = reorder(producto, Unidades_vendidas, decreasing
 - Si consideramos la categoría de FRUTAS Y VERDURAS. 
 Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
 
+```{r}
+df_peso <- df_tickets %>% filter(tipo == "Peso") #Df con solo productos por peso
+
+df_peso$producto <- gsub("1 ", "", df_peso$producto, fixed = T) #Arreglo un error por el que los productos aparecían de dos formas, por ejemplo, aparecía: "PLATANO" Y "1 PLATANO" como si fueran productos diferentes
+
+head(unique(df_peso$producto), 12) #Vemos los diferentes productos por peso
+
+#Vector de frutas y verduras al peso
+Frutas_y_verduras <- c("COL LOMBARDA", "PLATANO", "REPOLLO LISO GRANEL", "CALABACIN VERDE", "PATATA", "TOMATE NEGRO", "PIMIENTO VERDE", "CHIRIMOYA", "TOMATE ENSALADA", "SANDIA BAJA SEMILLAS", "BATATA GRANEL", "BROCOLI", "PIÑA", "PEPINO", "TOMATE CANARIO", "PIMIENTO ROJO", "PARAGUAYO", "MELON PIEL SAPO", "NARANJA", "GRANADA", "TOAMTE RAMA", "BANANA", "MANZANA GOLDEN", "MANDARINA", "PIMIENTO FREIR", "KIWI VERDE", "AGUACATE", "MELOCOTON AMARILLO", "TOMATE ROSA", "BERENJENA RAYADA GR", "MANZANA GRANNY", "MANGO", "LIMON", "TOMATE PERA", "HABAS", "TOMATE VALENCIANO", "PERA CONFERENCIA", "MANZ. ROJA DULCE", "MANZ. ROJA ACIDULCE", "COLIFLOR", "BERENJENA", "NECTARINA", "PERA ROCHA")
+
+#%>% summarise(Ventas = n(), Kilos = sum(cantidad))
+
+frutas_Y_verduras_mas_vendidas <- df_peso %>% mutate(cantidad = gsub(",", ".", cantidad)) %>%  #Cambio la coma por el punto en cantidad para poder pasarlo luego a numeric
+  filter(producto %in% Frutas_y_verduras) %>% 
+  group_by(producto) %>% 
+  summarise(Ventas = n(), Kilos = sum(as.numeric(cantidad))) %>% 
+  arrange(desc(Ventas))
+
+knitr::kable(head(frutas_Y_verduras_mas_vendidas, 5), caption = "Frutas y verduras más vendidas")
+```
+
+
 - Si consideramos la categoría de PESCADO. 
 Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
 
