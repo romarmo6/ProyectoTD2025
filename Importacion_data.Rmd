@@ -6,9 +6,11 @@ output:
   pdf_document:
     toc: true
     toc_depth: 3
+    number_sections: yes
   html_document:
     toc: true
     toc_depth: 3
+    number_sections: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -311,8 +313,8 @@ tabla_desc <- tabla_precios %>%
 
 #Mostramos tablas
 
-tabla_asc
-tabla_desc
+head(tabla_asc, 10)
+head(tabla_desc, 10)
 
 ```
 
@@ -338,6 +340,7 @@ paste("La compra de mayor importe tiene un valor de ",
 
 
 ```
+
 - ¿A qué horas del día se realizan más compras?
 
 ```{r}
@@ -426,7 +429,8 @@ top_productos_peso <- df_tickets %>%
 
 head(top_productos_peso)
 
-ggplot(head(top_productos_peso, 10), aes(x = factor(producto, levels = producto), y = num_kg_vendidas)) +
+ggplot(head(top_productos_peso, 10),
+       aes(x = factor(producto, levels = producto), y = num_kg_vendidas)) +
   geom_col(fill = "skyblue") +
   coord_flip() +
   labs(
@@ -455,7 +459,8 @@ Ventas_unitarias <- df_tickets %>%
   slice_max(Unidades_vendidas, n=5)
 
 ggplot(Ventas_unitarias, 
-       aes(x = reorder(producto, Unidades_vendidas, decreasing = TRUE), y = Unidades_vendidas)) + 
+       aes(x = reorder(producto, Unidades_vendidas, decreasing = TRUE),
+           y = Unidades_vendidas)) + 
   geom_col(fill = "forestgreen")  +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   labs(title = "Productos más vendidos. (Solo productos vendidos por unidades)", 
@@ -506,7 +511,8 @@ knitr::kable(head(frutas_Y_verduras_mas_vendidas, 5), caption = "Frutas y verdur
 
 
 - Si consideramos la categoría de PESCADO. 
-Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+Cuáles son los 5 productos más vendidos? 
+¿Cuántos kilos se han vendido de cada uno de estos productos?
 
 ```{r}
 #Utilizo el df calculado en el ejercicio anterior
