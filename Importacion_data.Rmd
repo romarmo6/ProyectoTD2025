@@ -87,6 +87,20 @@ los metadatos del ticket al que pertenecía, generando así un data.frame limpio
 y robusto, completo y sin valores perdidos, que servía como base para el posterior
 análisis exploratorio.
 
+## Modelización de los datos
+
+En la fase de modelización y preparación de los datos, realizamos varias 
+transformaciones clave para facilitar su análisis posterior. Una de las primeras
+acciones fue dividir la factura simplificada en tres partes: número de tienda, 
+número de caja y número de ticket. Esto nos permitió trabajar con cada elemento 
+de forma independiente y realizar filtrados o agrupaciones más precisas, por ejemplo,
+por tienda o por operario. Además, tuvimos que estandarizar los formatos numéricos,
+sustituyendo las comas por puntos en las variables cuantitativas (como los importes
+o los precios), ya que R no reconoce la coma como separador decimal en operaciones
+matemáticas. Asimismo, adaptamos el formato de la fecha para poder utilizarla en
+funciones de agrupación temporal, y tratamos también el campo de la hora cuando 
+fue necesario, extrayendo, por ejemplo, solo la hora sin minutos para simplificar
+ciertos análisis.
 
 ```{r}
 # Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data',
