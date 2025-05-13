@@ -376,15 +376,18 @@ que son las siguientes:
 
 ```{r}
 Ventas_unitarias <- df_tickets %>% filter(tipo == "Unitario") %>% 
+  
   group_by(producto) %>%
-  summarise(Unidades_vendidas = sum(as.numeric(cantidad))) %>% arrange(desc(Unidades_vendidas)) %>% slice_max(Unidades_vendidas, n=15)
+  
+  summarise(Unidades_vendidas = sum(as.numeric(cantidad))) %>%
+  
+  arrange(desc(Unidades_vendidas)) %>% 
+  
+  slice_max(Unidades_vendidas, n=15)
 
 ggplot(Ventas_unitarias, aes(x = reorder(producto, Unidades_vendidas, decreasing = TRUE), y = Unidades_vendidas)) + 
-  
   geom_col(fill = "forestgreen")  +
-  
   theme(axis.text.x = element_text(angle = 54, hjust = 1)) + 
-  
   labs(title = "Productos más vendidos. (Solo productos vendidos por unidades)", x = "Producto", y = "Unidades vendidas", caption = "Los 5 productos más vendidos son: Atún claro oliva, con 62 unidades,\nqueso lonchas cabra con 53, bolsa plastico con 51, leche desnat. calcio con 49 y yogur coco con 40")
 ```
 
@@ -434,4 +437,16 @@ ciudad_mas_tickets
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
 
+```{r}
+Tickets_dia_semana <- df_tickets %>% mutate(dia_semana = weekdays(as.Date(fecha, format = "%d/%m/%Y"))) %>% #Transformo a Date la columna fecha y con weekdays obtengo el día de la semana que se corresponde con cada fecha, y con eso creo la variable dia_semana
+  
+  group_by(dia_semana) %>% 
+  
+  summarise(Tickets = n_distinct(fichero)) #Cuento los distintos ficheros que hay para cada día de la semana
+
+ggplot(Tickets_dia_semana, aes(x = reorder(dia_semana, Tickets, decreasing = TRUE), y = Tickets)) + 
+  geom_col(fill = "slateblue") + 
+  labs(title = "Número de tickets recogidos cada día de la semana", x = "Día de la semana", caption = "Si tuviera que cerrar un día entre semana, lo haría el jueves.")
+
+```
 
