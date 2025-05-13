@@ -55,7 +55,7 @@ if (!require("pacman")) install.packages("pacman")
 p_load(ggplot2, pdftools, stringr, dplyr, tidyr, lubridate)
 ```
 
-## Importación y visión general de los datos
+# Importación y visión general de los datos
 
 Para comenzar nuestro análisis, se nos proporcionó una carpeta con una gran cantidad
 de tickets electrónicos en formato PDF. La mayoría de ellos pertenecían a supermercados 
@@ -264,13 +264,13 @@ En estas tablas podemos ver toda la información importada de los tickets,
 que hemos transformado en un data.frame de 18 variables.
 
 
-# Análisis de variables numéricas:
+## Análisis de variables numéricas:
 
 Tenemos 4 variables numéricas en el data.frame, que son:
-- `cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
-- `precio_unitario`: precio por unidad o por kilo de los productos
-- `importe`: importe total que se paga por cada producto
-- `total_compra`: importe de la compra realizada
+`cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
+`precio_unitario`: precio por unidad o por kilo de los productos
+`importe`: importe total que se paga por cada producto
+`total_compra`: importe de la compra realizada
 
 Haciendo uso de `summary` podemos hacer un análisis de sus principales estadísticos:
 
@@ -285,13 +285,12 @@ summary(df_analisis)
 ```
 
 
-
 # Preguntas
 
 Tras realizar la importación de los datos y observar la información que nos 
 aportan los tickets, nos planteamos una serie de preguntas:
 
-- ¿Cuántos productos suele incluir un ticket promedio? ¿Y el importe promedio por ticket?
+- ¿Cuántos productos suele incluir un ticket en promedio? ¿Y el importe promedio por ticket?
 
 ```{r}
 # Agrupamos por ticket y calculamos número de líneas (productos) y total del importe
@@ -308,8 +307,8 @@ resumen <- df_tickets %>%
 media_productos <- mean(resumen$productos_ticket)
 media_importe   <- mean(resumen$importe_ticket)
 
-paste("Productos medios por ticket",round(media_productos, 2))
-paste("Importe medio por ticket", round(media_importe, 2))
+paste("El promedio de productos por ticket es",round(media_productos, 2))
+paste("El importe promedio por ticket es", round(media_importe, 2))
 
 # Por tanto vemos que normalmente hay una media de 17 productos por ticket 
 # Y el importe medio suele ser unos 46 euros 
