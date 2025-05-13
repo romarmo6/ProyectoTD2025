@@ -375,6 +375,7 @@ knitr::kable(tabla_resumen, caption = "Figura 1: Resumen de productos e importes
 
 **- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?**
 
+**Figura 1: ... **
 ```{r}
 
 #  Calcular importe total por ticket
@@ -777,3 +778,26 @@ operarios_varias_tiendas <- df_tickets %>%
 
 knitr::kable(head(operarios_varias_tiendas, 10), caption = "Operarios que han trabajado en diferentes tiendas")
 ```
+
+
+# Conclusión.
+
+
+La realización de este proyecto nos ha permitido aplicar y consolidar muchas de 
+las competencias trabajadas a lo largo del curso. Más allá de los conocimientos 
+técnicos, ha sido una experiencia que nos ha ayudado a mejorar nuestra capacidad 
+de análisis, organización y resolución de problemas. Hemos aprendido a enfrentarnos
+a situaciones en las que era necesario buscar soluciones por cuenta propia,
+pero también a valorar la importancia del trabajo en equipo y del apoyo entre compañeros.
+
+Además, hemos tomado conciencia de lo crucial que puede ser cada detalle en un 
+código: un paréntesis mal puesto o una coma olvidada pueden hacer que todo falle.
+Este nivel de precisión nos ha hecho más rigurosos en nuestro trabajo. Por otro 
+lado, nos ha sorprendido la enorme cantidad de datos que puede esconder algo tan
+simple como un ticket de supermercado, y cómo esa información bien tratada puede 
+ofrecer resultados muy valiosos.
+
+Por último, hemos entendido que no solo importa lo que se analiza, sino también 
+cómo se representa. Elegir la visualización adecuada , ya sea un histograma, un 
+gráfico de líneas o un diagrama de barras, puede marcar la diferencia a la hora 
+de comunicar los resultados y facilitar su interpretación.
