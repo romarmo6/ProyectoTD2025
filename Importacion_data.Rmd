@@ -277,7 +277,7 @@ En estas tablas podemos ver toda la información importada de los tickets,
 que hemos transformado en un data.frame de 18 variables.
 
 
-## Análisis de variables numéricas:
+## Análisis de variables numéricas
 
 Tenemos 4 variables numéricas en el data.frame, que son:
 `cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
@@ -375,7 +375,7 @@ knitr::kable(tabla_resumen, caption = "Figura 1: Resumen de productos e importes
 
 **- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?**
 
-**Figura 1: ... **
+**Figura 1: **
 ```{r}
 
 #  Calcular importe total por ticket
@@ -472,6 +472,7 @@ paste("La compra de mayor importe tiene un valor de ",
 
 **- ¿A qué horas del día se realizan más compras?**
 
+**Figura 2: **
 ```{r}
 
 horas_compras <- df_tickets %>%
@@ -506,7 +507,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 **- Realizar un gráfico de las diferentes localidades en función del dinero ingresado en cada una de ellas, de mayor a menor.**
 
 
-
+**Figura 3: **
 ```{r}
 
 dinero_localidades <- df_tickets%>%
@@ -553,6 +554,7 @@ A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€.
 
 **- ¿Cuál es el top 10 de productos menos vendidos por peso?**
 
+**Figura 4 **
 ```{r}
 
 top_productos_peso <- df_tickets %>%
@@ -581,7 +583,7 @@ ggplot(head(top_productos_peso, 10),
 **- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? **
 **¿Cuántas unidades de cada uno se han vendido?**
 
-
+**Figura 5 **
 ```{r}
 
 Ventas_unitarias <- df_tickets %>% 
@@ -663,6 +665,7 @@ knitr::kable(head(pescado_mas_vendido, 5), caption = "Pescado más vendido")
 **- Muestra mediante un gráfico de líneas como ha variado el precio por kilo de **
 **las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.**
 
+**Figura 6**
 ```{r}
 precio_kilo <- df_tickets %>%
    # Filtrar solo productos de tipo "Peso" que contengan "banana" o "plátano" en el nombre
@@ -709,6 +712,7 @@ ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) +
 
 **- ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?**
 
+**Figura 7**
 ```{r}
 
 # 1. Procedencia de los tickets (distribución por ciudad)
@@ -747,7 +751,7 @@ La ciudad con más tickets es Valencia, con 130 tickets. Con bastante diferencia
 **- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. **
 **- Si tuvieses que cerrar un día entre semana qué día lo harías ?**
 
-
+**Figura 8**
 ```{r}
 
 df_tickets %>%
