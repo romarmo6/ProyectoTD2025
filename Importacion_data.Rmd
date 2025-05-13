@@ -234,10 +234,16 @@ En estas tablas podemos ver toda la información importada de los tickets,
 que hemos transformado en un data.frame de 18 variables.
 
 
-Análisis de variables numéricas:
+# Análisis de variables numéricas:
 
 Tenemos 4 variables numéricas en el data.frame, que son:
-Cantidad: número de unidades que se compran de cada producto si son unitarios
+`cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
+`precio_unitario`: precio por unidad o por kilo de los productos
+`importe`: importe total que se paga por cada producto
+`total_compra`: importe de la compra realizada
+
+Haciendo uso de `summary` podemos hacer un análisis de sus principales estadísticos:
+
 ```{r}
 df_analisis <- df_tickets %>% select(c(cantidad, precio_unitario, importe, total_compra)) %>% 
   mutate(precio_unitario = as.numeric(gsub(",", ".", precio_unitario))) %>%
@@ -247,6 +253,7 @@ df_analisis <- df_tickets %>% select(c(cantidad, precio_unitario, importe, total
 
 summary(df_analisis)
 ```
+
 
 
 ## Preguntas
