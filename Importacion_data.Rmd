@@ -6,7 +6,6 @@ output:
     toc: true
     toc_depth: 3
     number_sections: yes
-    toc: true
     toc_depth: 3
     number_sections: true
   pdf_document:
