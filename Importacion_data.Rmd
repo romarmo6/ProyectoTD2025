@@ -316,8 +316,7 @@ horas_compras <- df_tickets %>%
   # Renombrar columnas para claridad
   rename(hora = hora_simple, compras = n)
 
-# Ver el resultado
-View(horas_compras)
+  horas_compras
 
 # Opcional: gráfico de barras
 ggplot(horas_compras, aes(x = hora, y = compras)) +
@@ -327,7 +326,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
        y = "Cantidad de compras") +
   theme_minimal()
 
-#Como se puede observar en la grafica, se realiza un mayor numero de compras en las horas de la tarde. A las 20h se vende un total de 1827 productos, siendo el numero mas alto
+#Como se puede observar en la grafica, se realiza un mayor numero de compras en las horas de la tarde. A las 20h se vende un total de 734 productos, siendo el numero mas alto. Y a las 19h un total de 704.
 ```
 
 
@@ -356,12 +355,14 @@ dinero_localidades <- df_tickets%>%
   
   filter(!is.na(total_ingresado)) #Filtramos los NA
 
+dinero_localidades
+
   # Gráfico de barras
 ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_col(fill = 'skyblue')+ labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos")+ theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
                    #Sirve para rotar las etiquetas y que quepan en el grafico
 
-# La localidad con más ingresos es Valencia, con 113220 € ingresados.
-#A esta le sigue Alcoy con 77768 € y Muro de Alcoy que baja a 30277€
+# La localidad con más ingresos es Valencia, con 124248 € ingresados.
+#A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€
 ```
 
 
@@ -484,12 +485,14 @@ precio_kilo <- df_tickets %>%
   # Filtrar solo bananas y plátanos
     filter(tipo_producto %in% c("Banana", "Plátano")) 
 
-print(precio_kilo)
+precio_kilo
 
 ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) + geom_line(size = 1) + geom_point(size = 2) + labs(title = "Variación del precio por kilo en bananas y plátanos", x="Fecha", y="Precio Medio") + theme_minimal() +  scale_color_manual(values = c("Banana" = "yellow", "Plátano" = "green"))
 
 
 #Como podemos ver en el gráfico, el precio del plátano varia mucho de precio en comparación con la banana. Además, el plátano es bastante más caro.
+#Gracias al gráfico se puede observar que el plátano es mucho más caro en verano y a medida que se acerca el invierno baja de precio.
+#Mientras que la banana tiene un precio muy parecido durante todo el año.
 ```
 
 
@@ -508,6 +511,8 @@ procedencia_tickets <- df_tickets %>%
   
   arrange(desc(num_tickets)) #Orden descendente
 
+procedencia_tickets
+
 # Gráfico de procedencia     
 ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_tickets)) +
   geom_col(fill = "orange") +
@@ -522,7 +527,7 @@ ciudad_mas_tickets <- procedencia_tickets %>%
   slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
 ciudad_mas_tickets
 
-#La ciudad con más tickets es Valencia, con 129 tickets
+#La ciudad con más tickets es Valencia, con 130 tickets. Con bastante diferencia de la segunda que es Alboraya con 50.
 ```
 
 
