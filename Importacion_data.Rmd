@@ -276,7 +276,7 @@ En estas tablas podemos ver toda la información importada de los tickets,
 que hemos transformado en un data.frame de 18 variables.
 
 
-## Análisis de variables numéricas:
+# Análisis de variables numéricas:
 
 Tenemos 4 variables numéricas en el data.frame, que son:
 `cantidad`: número de unidades que se compran de cada producto si son unitarios, y peso en kilos si son productos al peso
@@ -343,7 +343,7 @@ las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
 **RESPUESTAS**
 
-- ¿Cuántos productos suele incluir un ticket en promedio? ¿Y el importe promedio por ticket?
+**- ¿Cuántos productos suele incluir un ticket en promedio? ¿Y el importe promedio por ticket?**
 
 ```{r}
 # Agrupamos por ticket y calculamos número de líneas (productos) y total del importe
@@ -368,8 +368,7 @@ paste("El importe promedio por ticket es", round(media_importe, 2))
 
 ```
 
-- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes 
-más altos que las de pueblos pequeños?
+**- ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?**
 
 ```{r}
 
@@ -407,7 +406,7 @@ ggplot(media_importe_ciudad, aes(x = ciudad, y = media_importe, size = media_imp
 
 ```
 
-- ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
+**- ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?**
 
 ```{r}
 #Filtrar sólo productos unitarios y convertimos el precio a valor numerico
@@ -438,7 +437,7 @@ head(tabla_desc, 10)
 
 ```
 
-- ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
+**- ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?**
 
 ```{r}
 # Sumar importe por ticket
@@ -461,7 +460,7 @@ paste("La compra de mayor importe tiene un valor de ",
 
 ```
 
-- ¿A qué horas del día se realizan más compras?
+**- ¿A qué horas del día se realizan más compras?**
 
 ```{r}
 
@@ -493,8 +492,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 ```
 
 
-- Realizar un gráfico de las diferentes localidades en función del dinero ingresado 
-en cada una de ellas, de mayor a menor.
+**- Realizar un gráfico de las diferentes localidades en función del dinero ingresado en cada una de ellas, de mayor a menor.**
 
 ```{r}
 
@@ -564,11 +562,9 @@ ggplot(head(top_productos_peso, 10),
 ```
 
 
-También trataremos de responder a las preguntas que nos plantean en el proyecto, 
-que son las siguientes:
+**- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? **
+**¿Cuántas unidades de cada uno se han vendido?**
 
-- ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas? 
-¿Cuántas unidades de cada uno se han vendido?
 
 ```{r}
 
@@ -592,8 +588,8 @@ ggplot(Ventas_unitarias,
 ```
 
 
-- Si consideramos la categoría de FRUTAS Y VERDURAS. 
-Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+**- Si consideramos la categoría de FRUTAS Y VERDURAS. **
+**Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de cada uno de estos productos?**
 
 ```{r}
 df_peso <- df_tickets %>% filter(tipo == "Peso") #Df con solo productos por peso
@@ -602,9 +598,9 @@ df_peso$producto <- gsub("1 ", "", df_peso$producto, fixed = T) #Arreglo un erro
 # por el que los productos aparecían de dos formas, por ejemplo, aparecía: "PLATANO" 
 # Y "1 PLATANO" como si fueran productos diferentes
 
-head(unique(df_peso$producto), 12) #Vemos los diferentes productos por peso
+#unique(df_peso$producto) -> Vemos los diferentes productos por peso
 
-#Vector de frutas y verduras al peso
+#Vector de frutas y verduras al peso (hecho manualmente)
 Frutas_y_verduras <- c("COL LOMBARDA", "PLATANO", "REPOLLO LISO GRANEL", 
                        "CALABACIN VERDE", "PATATA", "TOMATE NEGRO", 
                        "PIMIENTO VERDE", "CHIRIMOYA", "TOMATE ENSALADA", 
@@ -631,9 +627,8 @@ knitr::kable(head(frutas_Y_verduras_mas_vendidas, 5), caption = "Frutas y verdur
 ```
 
 
-- Si consideramos la categoría de PESCADO. 
-Cuáles son los 5 productos más vendidos? 
-¿Cuántos kilos se han vendido de cada uno de estos productos?
+**- Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos? **
+**¿Cuántos kilos se han vendido de cada uno de estos productos?**
 
 ```{r}
 #Utilizo el df calculado en el ejercicio anterior
@@ -649,8 +644,8 @@ knitr::kable(head(pescado_mas_vendido, 5), caption = "Pescado más vendido")
 ```
 
 
-- Muestra mediante un gráfico de líneas como ha variado el precio por kilo de 
-las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+**- Muestra mediante un gráfico de líneas como ha variado el precio por kilo de **
+**las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.**
 
 ```{r}
 precio_kilo <- df_tickets %>%
@@ -696,7 +691,7 @@ ggplot(precio_kilo, aes(x = fecha, y = precio_medio, color=tipo_producto)) +
 ```
 
 
-- ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
+**- ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?**
 
 ```{r}
 
@@ -735,8 +730,8 @@ ciudad_mas_tickets
 ```
 
 
-- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
-¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
+**- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. **
+**Si tuvieses que cerrar un día entre semana qué día lo harías ?**
 ```{r}
 
 df_tickets %>%
