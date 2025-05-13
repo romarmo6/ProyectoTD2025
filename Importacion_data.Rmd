@@ -3,7 +3,9 @@ title: "Mini Proyecto Tratamiento de Datos"
 author: "Rodrigo Martín,Andreu Fuentes,Pablo Hernández,Alonso Sánchez"
 date: "2025-04-12"
 output:
-  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: yes
     toc: true
     toc_depth: 3
     number_sections: true
@@ -55,7 +57,50 @@ p_load(ggplot2, pdftools, stringr, dplyr, tidyr, lubridate)
 
 # Importación y visión general de los datos
 
-Código para la importación de los datos:
+Para comenzar nuestro análisis, se nos proporcionó una carpeta con una gran cantidad
+de tickets electrónicos en formato PDF. La mayoría de ellos pertenecían a supermercados 
+Mercadona, lo cual nos proporcionó una base de datos sólida y suficientemente amplia
+como para extraer conclusiones representativas. Esto es especialmente importante,
+ya que un volumen reducido de tickets podría haber llevado a interpretaciones erróneas
+o poco fiables. Sin embargo, en esta misma carpeta también se encontraban archivos
+que no formaban parte del estudio, como tickets de otras cadenas (por ejemplo, Consum) 
+o imágenes escaneadas que no podían procesarse correctamente mediante librerías 
+como pdf_text() de pdftools.
+
+Para evitar procesar información irrelevante o inservible, implementamos un filtrado
+inicial basado en el nombre de los archivos, detectando aquellos que contenían el
+patrón “Mercadona”. Solo estos fueron cargados y analizados. Una vez extraído el 
+contenido de cada ticket, se generaba un data.frame sucio, en el que cada línea 
+se correspondía con una línea original del ticket. A medida que se leía este contenido,
+se asignaban variables clave a determinadas posiciones fijas dentro del ticket: 
+por ejemplo, la línea 2 solía contener la dirección, la línea 3 el código postal 
+y la ciudad, y así sucesivamente con la fecha, la hora, el número de operario o 
+el número de factura simplificada.
+
+Cuando se llegaba a la sección de productos, se aplicaban funciones específicas 
+diseñadas para identificar y extraer productos en función de su formato: una función
+para productos unitarios (como latas o botellas) y otra para productos vendidos al
+peso (como frutas, verduras o pescados). Estas funciones analizaban la estructura
+de cada línea y extraían los campos correspondientes (nombre, cantidad, precio 
+unitario e importe). Finalmente, para cada producto extraído, se le añadían todos
+los metadatos del ticket al que pertenecía, generando así un data.frame limpio 
+y robusto, completo y sin valores perdidos, que servía como base para el posterior
+análisis exploratorio.
+
+## Modelización de los datos
+
+En la fase de modelización y preparación de los datos, realizamos varias 
+transformaciones clave para facilitar su análisis posterior. Una de las primeras
+acciones fue dividir la factura simplificada en tres partes: número de tienda, 
+número de caja y número de ticket. Esto nos permitió trabajar con cada elemento 
+de forma independiente y realizar filtrados o agrupaciones más precisas, por ejemplo,
+por tienda o por operario. Además, tuvimos que estandarizar los formatos numéricos,
+sustituyendo las comas por puntos en las variables cuantitativas (como los importes
+o los precios), ya que R no reconoce la coma como separador decimal en operaciones
+matemáticas. Asimismo, adaptamos el formato de la fecha para poder utilizarla en
+funciones de agrupación temporal, y tratamos también el campo de la hora cuando 
+fue necesario, extrayendo, por ejemplo, solo la hora sin minutos para simplificar
+ciertos análisis.
 
 ```{r}
 # Listar todos los PDFs con "Mercadona" en el nombre dentro de la carpeta 'data',
