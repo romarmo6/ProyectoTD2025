@@ -1,16 +1,22 @@
 ---
 title: "Mini Proyecto Tratamiento de Datos"
-author: "Grupo I"
+author: |
+  <center>
+  Rodrigo Martín<br>
+  Andreu Fuentes<br>
+  Pablo Hernández<br>
+  Alonso Sánchez
+  </center>
 date: "2025-04-12"
 output:
-  html_document:
-    toc: true
-    toc_depth: 3
-    number_sections: yes
   pdf_document:
     toc: true
     toc_depth: 3
-    number_sections: yes
+    number_sections: true
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
