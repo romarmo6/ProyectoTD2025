@@ -432,10 +432,14 @@ tabla_desc <- tabla_precios %>%
 
 #Mostramos tablas
 
-knitr::kable(head(tabla_asc, 10))
-knitr::kable(head(tabla_desc, 10))
+knitr::kable(head(tabla_asc, 10), caption = "Productos más baratos vendidos por unidades")
+knitr::kable(head(tabla_desc, 10), caption = "Productos más caros vendidos por unidades")
 
 ```
+
+
+El producto más barato es bolsa plástico y el más caro es alistado mediano.
+
 
 **- ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?**
 
@@ -535,8 +539,11 @@ ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado)) +
 #A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€
 
 ```
+ 
+ 
  La localidad con más ingresos es Valencia, con 124248 € ingresados.
 A esta le sigue Alcoy con 89361 € y Muro de Alcoy que baja a 31186€.
+
 
 **- ¿Cuál es el top 10 de productos menos vendidos por peso?**
 
@@ -549,7 +556,7 @@ top_productos_peso <- df_tickets %>%
     num_kg_vendidas = sum(as.numeric(gsub(",", ".", cantidad)))) %>%
   arrange(num_kg_vendidas)
 
-head(top_productos_peso)
+knitr::kable(head(top_productos_peso), caption = "Productos menos vendidos por peso")
 
 ggplot(head(top_productos_peso, 10),
        aes(x = factor(producto, levels = producto), y = num_kg_vendidas)) +
@@ -710,7 +717,7 @@ procedencia_tickets <- df_tickets %>%
   
   arrange(desc(num_tickets)) #Orden descendente
 
-procedencia_tickets
+knitr::kable(procedencia_tickets, caption = "Procedencia de los tickets")
 
 # Gráfico de procedencia     
 ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_tickets)) +
@@ -727,9 +734,6 @@ ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_ticke
 #ciudad_mas_tickets <- procedencia_tickets %>%
   #slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
 #ciudad_mas_tickets
-
-#La ciudad con más tickets es Valencia, con 130 tickets. 
-# Con bastante diferencia de la segunda que es Alboraya con 50.
 ```
 
 La ciudad con más tickets es Valencia, con 130 tickets. Con bastante diferencia de la segunda que es Alboraya con 50.
@@ -754,6 +758,8 @@ df_tickets %>%
 
 **-¿Ha realizado un mismo operario ventas desde tiendas diferentes?**
 
+Sí, y en la siguiente tabla podemos ver los datos de esas tiendas:
+
 ```{r}
 # Operario tiendas diferentes
 
@@ -766,6 +772,6 @@ operarios_varias_tiendas <- df_tickets %>%
             direccion = direccion) %>%
   filter(num_tiendas > 1)
 
-print(operarios_varias_tiendas)
+knitr::kable(operarios_varias_tiendas)
 ```
 
