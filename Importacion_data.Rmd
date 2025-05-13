@@ -363,7 +363,7 @@ ggplot(head(top_productos_peso, 10), aes(x = factor(producto, levels = producto)
       
 ```
 
-=======
+```{r}
 library(dplyr)
 dinero_localidades <- df_tickets%>%
   
@@ -556,6 +556,8 @@ df_tickets %>%
   labs(title = "Número de tickets por día de la semana",
        x = "Día de la semana", y = "Número de tickets") +
   theme_minimal()
+
+```
 
 ```{r}
 Tickets_dia_semana <- df_tickets %>% mutate(dia_semana = weekdays(as.Date(fecha, format = "%d/%m/%Y"))) %>% #Transformo a Date la columna fecha y con weekdays obtengo el día de la semana que se corresponde con cada fecha, y con eso creo la variable dia_semana
