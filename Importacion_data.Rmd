@@ -193,11 +193,111 @@ aportan los tickets, nos planteamos una serie de preguntas:
 
 - ¿Cuántos productos suele incluir un ticket promedio? ¿Y el importe promedio por ticket?
 
+```{r}
+# Agrupamos por ticket y calculamos número de líneas (productos) y total del importe
+
+resumen <- df_tickets %>%
+  group_by(fichero) %>%
+  summarise(
+    productos_ticket = n(),
+    importe_ticket   = sum(as.numeric(gsub(",", ".", importe)), na.rm = TRUE)
+  )
+
+# Calculamos la media 
+
+media_productos <- mean(resumen$productos_ticket)
+media_importe   <- mean(resumen$importe_ticket)
+
+paste("productos medios por ticket",round(media_productos, 2))
+paste("importe medio por ticket", round(media_importe, 2))
+
+# Por tanto vemos que normalmente hay una media de 17 productos por ticket 
+# Y el importe medio suele ser unos 46 euros 
+
+```
+
 - ¿Las tiendas en ciudades grandes (como Valencia) tienen tickets con importes más altos que las de pueblos pequeños?
+```{r}
+
+#  Calcular importe total por ticket
+ res_ticket <- df_tickets %>%
+  group_by(ciudad, fichero) %>%
+  summarise(
+    importe_ticket = sum(as.numeric(gsub(",", ".", importe))),
+    .groups = "drop"
+  )
+
+#  Calcular importe medio por ciudad
+media_importe_ciudad <- res_ticket %>%
+  group_by(ciudad) %>%
+  summarise(
+    media_importe = mean(importe_ticket),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(media_importe))
+
+# Mostrar la tabla de importes medios por ciudad
+print(media_importe_ciudad)
+
+# Como podemos ver resulta que valencia no esta ni en la primera pagina de los 
+#resultados, las poblaciones que más gastan son las de tamaño medio/pequeño
+
+```
 
 - ¿Cuál es el producto más caro vendido por unidades? ¿Y el más barato?
 
+```{r}
+#Filtrar sólo productos unitarios y convertimos el precio a valor numerico
+
+tabla_precios <- df_tickets %>%
+  filter(tipo == "Unitario") %>%  
+  mutate(
+    precio_num = as.numeric(gsub(",", ".", precio_unitario))
+  ) %>%
+  filter(precio_num > 0) %>%     # ignorar valores cero
+  select(producto, precio_num)
+
+# Usamos unique para que solo aparezca cada elemento una vez 
+
+tabla_precios <- unique(tabla_precios)
+
+# Tablas primero en orden ascendente y luego descente para ver cual es el producto mas caro y mas barato
+tabla_asc <- tabla_precios %>%
+  arrange(precio_num)
+
+tabla_desc <- tabla_precios %>%
+  arrange(desc(precio_num))
+
+#Mostramos tablas
+
+tabla_asc
+tabla_desc
+
+```
+
 - ¿Cúal ha sido la compra de mayor importe? ¿Y la de menor importe?
+```{r}
+# Sumar importe por ticket
+extremos <- df_tickets %>%
+  group_by(fichero) %>%
+  summarise(
+    importe_ticket = sum(as.numeric(gsub(",", ".", importe)), na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(importe_ticket)
+
+# Sacamos el minimo y maximo 
+compra_menor <- extremos %>% slice(1)
+compra_mayor <- extremos %>% slice(n())
+
+#mostramos el valor de la compra mas grande y mas pequeña
+cat("La compra de menor importe tiene un valor de ", 
+    round(compra_menor$importe_ticket, 2), "€\n", sep = "")
+cat("La compra de mayor importe tiene un valor de ", 
+    round(compra_mayor$importe_ticket, 2), "€\n", sep = "")
+
+
+```
 
 - ¿A qué horas del día se realizan más compras?
 
@@ -235,6 +335,7 @@ ggplot(horas_compras, aes(x = hora, y = compras)) +
 en cada una de ellas, de mayor a menor.
 
 ```{r}
+<<<<<<< HEAD
 
 ```
 
@@ -263,6 +364,40 @@ ggplot(head(top_productos_peso, 10), aes(x = factor(producto, levels = producto)
       
 ```
 
+=======
+library(dplyr)
+dinero_localidades <- df_tickets%>%
+  
+  # Convertir total_compra a numérico (reemplazando coma por punto)
+  mutate(total_compra = as.numeric(gsub(",", ".", total_compra))) %>%
+  
+  # Agrupar por localidad (ciudad)
+  group_by(ciudad) %>%
+  
+  # Calcular el total ingresado por localidad
+  summarise(total_ingresado = sum(total_compra, na.rm = TRUE)) %>%
+  
+  # Ordenar de mayor a menor
+  arrange(desc(total_ingresado))%>%
+  
+ mutate(ciudad_ordenada = reorder(ciudad, -total_ingresado))%>% #Reorder: reordena los niveles de un factor. El signo "-", indica que será descendente
+  
+  slice_max(total_ingresado, n=15) %>%  #Solo salen las 15 primeras ciudades
+  
+  filter(!is.na(total_ingresado)) #Filtramos los NA
+
+  # Gráfico de barras
+ggplot(dinero_localidades, aes(x= ciudad_ordenada, y = total_ingresado))+ geom_col(fill = 'skyblue')+ labs(title = "Dinero ganado por localidades", x = "Ciudades", y = "Ingresos")+ theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+                   #Sirve para rotar las etiquetas y que quepan en el grafico
+
+# La localidad con más ingresos es Valencia, con 113220 € ingresados.
+#A esta le sigue Alcoy con 77768 € y Muro de Alcoy que baja a 30277€
+```
+
+
+- ¿Cuáles son los productos menos vendidos de los que se venden por unidades? 
+¿Y de los que se venden al peso?
+>>>>>>> c0a8b66c083be4bed7c00f8a69e8b6e9f0c372db
 
 También trataremos de responder a las preguntas que nos plantean en el proyecto, 
 que son las siguientes:
@@ -280,6 +415,37 @@ Cuáles son los 5 productos más vendidos? ¿Cuántos kilos se han vendido de ca
 las bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
 
 - ¿Cuál es la procedencia de los tickets? ¿Qué ciudad/ pueblo tiene un mayor número de tickets?
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# 1. Procedencia de los tickets (distribución por ciudad)
+procedencia_tickets <- df_tickets %>%
+  
+  distinct(fichero, ciudad) %>%  # Para obtener una entrada única por ticket (evitando duplicados si un ticket tiene múltiples productos).
+
+  count(ciudad, name = "num_tickets") %>% #Agrupamos por ciudad y contamos los tickets
+  
+  arrange(desc(num_tickets)) #Orden descendente
+
+# Gráfico de procedencia     
+ggplot(procedencia_tickets, aes(x = reorder(ciudad, -num_tickets), y = num_tickets)) +
+  geom_col(fill = "orange") +
+  labs(title = "Procedencia de los tickets por ciudad",
+       x = "Ciudad",
+       y = "Número de tickets") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) #Ajustamos el angulo de las etiquetas
+
+# 2. Ciudad con mayor número de tickets (respuesta directa)
+ciudad_mas_tickets <- procedencia_tickets %>%
+  slice_max(num_tickets, n = 1)  #Seleccionamos la fila con el maximo valor en num_tickets
+ciudad_mas_tickets
+
+#La ciudad con más tickets es Valencia, con 129 tickets
+```
+
 
 - Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. 
 ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
